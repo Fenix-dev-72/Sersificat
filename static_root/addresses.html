@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mening manzillarim — MediaPark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ── PAGE LAYOUT ── */
+        .profile-page { min-height: 80vh; padding: 36px 0 80px; background: #f8fafc; }
+        .profile-layout { display: grid; grid-template-columns: 260px 1fr; gap: 24px; align-items: flex-start; }
+
+        /* ── SIDEBAR ── */
+        .sidebar { background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); overflow: hidden; position: sticky; top: 20px; }
+        .sidebar-user { padding: 24px 20px 20px; border-bottom: 1px solid #f1f5f9; display: flex; align-items: center; gap: 14px; }
+        .sidebar-avatar { width: 52px; height: 52px; border-radius: 50%; background: #e63329; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; color: #fff; flex-shrink: 0; overflow: hidden; }
+        .sidebar-avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .sidebar-name { font-size: 15px; font-weight: 700; color: #1e293b; line-height: 1.3; }
+        .sidebar-phone { font-size: 13px; color: #94a3b8; margin-top: 2px; }
+        .sidebar-nav { padding: 8px 0; }
+        .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; font-size: 14px; font-weight: 500; color: #475569; cursor: pointer; transition: all .15s; text-decoration: none; border-left: 3px solid transparent; }
+        .sidebar-item:hover { background: #fef2f2; color: #e63329; }
+        .sidebar-item.active { background: #fef2f2; color: #e63329; border-left-color: #e63329; font-weight: 700; }
+        .sidebar-item.logout { color: #ef4444; margin-top: 4px; border-top: 1px solid #f1f5f9; }
+        .sidebar-item.logout:hover { background: #fef2f2; }
+        .sidebar-icon { width: 18px; height: 18px; flex-shrink: 0; }
+
+        /* ── ADDRESSES ── */
+        .addr-header-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .page-title { font-size: 22px; font-weight: 800; color: #1e293b; font-family: 'Manrope', sans-serif; }
+
+        .btn-add-addr {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 20px; border-radius: 10px;
+            background: #e63329; color: #fff;
+            font-size: 14px; font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            border: none; cursor: pointer; transition: background .15s;
+        }
+        .btn-add-addr:hover { background: #c62d23; }
+
+        /* Empty state */
+        .addr-empty { background: #fff; border-radius: 16px; box-shadow: 0 2px 16px rgba(0,0,0,0.06); padding: 80px 20px; text-align: center; }
+        .addr-empty-icon { width: 72px; height: 72px; border-radius: 50%; background: #fef2f2; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+        .addr-empty h3 { font-size: 18px; font-weight: 800; color: #1e293b; margin-bottom: 8px; font-family: 'Manrope', sans-serif; }
+        .addr-empty p  { font-size: 14px; color: #94a3b8; line-height: 1.6; max-width: 300px; margin: 0 auto; }
+
+        /* Address cards */
+        .addr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+        .addr-card { background: #fff; border-radius: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); padding: 20px; position: relative; border: 1.5px solid #f1f5f9; transition: border-color .15s; }
+        .addr-card:hover { border-color: #fecaca; }
+        .addr-card-icon { width: 40px; height: 40px; border-radius: 10px; background: #fef2f2; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+        .addr-card-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 4px; }
+        .addr-card-coords { font-size: 13px; color: #94a3b8; font-family: 'Plus Jakarta Sans', sans-serif; margin-bottom: 4px; }
+        .addr-card-address { font-size: 12px; color: #64748b; font-family: 'Plus Jakarta Sans', sans-serif; line-height: 1.4; margin-top: 4px; }
+        .addr-card-actions { display: flex; gap: 8px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #f8fafc; }
+        .addr-btn { padding: 8px 14px; border-radius: 8px; font-size: 13px; font-weight: 600; font-family: 'Manrope', sans-serif; cursor: pointer; transition: all .15s; border: none; }
+        .addr-btn-edit { background: #f1f5f9; color: #475569; }
+        .addr-btn-edit:hover { background: #e2e8f0; }
+        .addr-btn-del  { background: #fef2f2; color: #ef4444; }
+        .addr-btn-del:hover  { background: #fee2e2; }
+
+        /* ── MAP MODAL ── */
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.5); z-index: 9999; align-items: center; justify-content: center; }
+        .modal-overlay.open { display: flex; }
+
+        .map-modal-box {
+            background: #fff; border-radius: 20px; width: 100%; max-width: 620px;
+            box-shadow: 0 12px 50px rgba(0,0,0,.22);
+            display: flex; flex-direction: column;
+            max-height: 90vh; overflow: hidden;
+        }
+        .map-modal-header {
+            padding: 22px 24px 16px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .map-modal-title { font-size: 18px; font-weight: 800; color: #1e293b; font-family: 'Manrope', sans-serif; }
+        .map-modal-close {
+            width: 32px; height: 32px; border-radius: 8px;
+            border: none; background: #f1f5f9; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: #64748b; font-size: 18px; transition: background .15s;
+        }
+        .map-modal-close:hover { background: #e2e8f0; }
+
+        /* Map container */
+        #addr-map {
+            height: 380px; width: 100%;
+            flex-shrink: 0;
+        }
+
+        /* Map controls below map */
+        .map-controls {
+            padding: 16px 24px 20px;
+        }
+
+        /* GPS button */
+        .btn-gps {
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px; border-radius: 10px;
+            background: #eff6ff; color: #2563eb;
+            font-size: 13px; font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            border: 1.5px solid #bfdbfe; cursor: pointer;
+            transition: all .15s; margin-bottom: 14px; width: 100%;
+            justify-content: center;
+        }
+        .btn-gps:hover { background: #dbeafe; border-color: #93c5fd; }
+        .btn-gps:disabled { opacity: .6; cursor: not-allowed; }
+
+        /* Selected coords display */
+        .map-selected-info {
+            background: #f8fafc; border-radius: 10px;
+            padding: 12px 14px; margin-bottom: 14px;
+            font-size: 13px; color: #475569;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            border: 1px solid #e2e8f0;
+            min-height: 44px; display: flex; align-items: center; gap: 8px;
+        }
+        .map-selected-info.has-coords { color: #1e293b; }
+        .map-coords-text { flex: 1; }
+        .map-address-text { font-size: 12px; color: #64748b; margin-top: 4px; }
+
+        .map-hint {
+            font-size: 12px; color: #94a3b8;
+            text-align: center; margin-bottom: 14px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .map-modal-btns { display: flex; gap: 10px; }
+        .modal-cancel  { flex: 1; padding: 13px; border-radius: 12px; border: 2px solid #e2e8f0; background: #fff; font-size: 14px; font-weight: 700; color: #1e293b; cursor: pointer; font-family: 'Manrope', sans-serif; transition: background .15s; }
+        .modal-cancel:hover { background: #f8fafc; }
+        .modal-confirm { flex: 1; padding: 13px; border-radius: 12px; border: none; background: #e63329; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; font-family: 'Manrope', sans-serif; transition: background .15s; }
+        .modal-confirm:hover { background: #c62d23; }
+        .modal-confirm:disabled { background: #fca5a5; cursor: not-allowed; }
+
+        .modal-error { font-size: 13px; color: #ef4444; margin-bottom: 10px; display: none; padding: 8px 12px; background: #fef2f2; border-radius: 8px; }
+
+        /* Delete & Logout modals */
+        .modal-del-box { background: #fff; border-radius: 20px; padding: 36px 32px; width: 100%; max-width: 340px; text-align: center; box-shadow: 0 8px 40px rgba(0,0,0,.18); }
+        .modal-del-icon  { font-size: 42px; margin-bottom: 12px; }
+        .modal-del-title { font-size: 20px; font-weight: 800; color: #1e293b; font-family: 'Manrope', sans-serif; margin-bottom: 8px; }
+        .modal-del-desc  { font-size: 14px; color: #94a3b8; margin-bottom: 28px; line-height: 1.6; }
+        .del-modal-btns { display: flex; gap: 12px; }
+
+        /* Spinner */
+        .p-spinner { width: 32px; height: 32px; border-radius: 50%; border: 3px solid #f1f5f9; border-top-color: #e63329; animation: spin .7s linear infinite; margin: 60px auto; display: block; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Leaflet pin pulse */
+        .map-pin-pulse {
+            position: absolute;
+            width: 14px; height: 14px;
+            background: #e63329; border-radius: 50%;
+            border: 3px solid #fff;
+            box-shadow: 0 2px 8px rgba(230,51,41,0.5);
+        }
+
+        @media (max-width: 900px) {
+            .profile-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; }
+            .map-modal-box { max-width: 100%; border-radius: 0; max-height: 100vh; }
+            #addr-map { height: 300px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="header-top-bar"><div class="container">
+        <span>🚚 Bepul yetkazib berish</span>
+        <span>📞 +998 71 203 33 33</span>
+        <span>⏰ 09:00 – 21:00</span>
+    </div></div>
+    <nav class="navbar"><div class="container navbar-inner">
+        <div class="logo"><a href="index.html"><span class="logo-accent">MEDIA</span><span class="logo-main">PARK</span></a></div>
+        <div class="header-actions">
+            <a href="wishlist.html" class="action-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span>Sevimlilar</span>
+            </a>
+            <a href="cart.html" class="action-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <span>Savatcha</span>
+            </a>
+            <div class="action-btn" style="color:var(--accent)" onclick="profileBtnClick()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span id="profile-label">Profil</span>
+            </div>
+        </div>
+    </div></nav>
+</header>
+
+<div class="profile-page">
+    <div class="container">
+        <div class="profile-layout">
+
+            <!-- SIDEBAR -->
+            <aside class="sidebar">
+                <div class="sidebar-user">
+                    <div class="sidebar-avatar" id="sb-avatar">
+                        <div class="p-spinner" style="width:20px;height:20px;margin:0;border-width:2px;border-top-color:#fff"></div>
+                    </div>
+                    <div>
+                        <div class="sidebar-name"  id="sb-name">Yuklanmoqda...</div>
+                        <div class="sidebar-phone" id="sb-phone">—</div>
+                    </div>
+                </div>
+                <nav class="sidebar-nav">
+                    <a class="sidebar-item" href="profile.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        Shaxsiy kabinet
+                    </a>
+                    <a class="sidebar-item active" href="addresses.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                        Mening manzillarim
+                    </a>
+                    <a class="sidebar-item" href="orders.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                        Mening buyurtmalarim
+                    </a>
+                    <a class="sidebar-item" href="reviews.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        Mening sharhlarim
+                    </a>
+                    <a class="sidebar-item" href="returns.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.83"/></svg>
+                        Mening qaytarishlarim
+                    </a>
+                    <a class="sidebar-item" href="promocodes.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                        Mening promokodlarim
+                    </a>
+                    <a class="sidebar-item" href="verify.html">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        Tasdiqlash
+                    </a>
+                    <div class="sidebar-item logout" onclick="openLogoutModal()">
+                        <svg class="sidebar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                        Chiqish
+                    </div>
+                </nav>
+            </aside>
+
+            <!-- MAIN -->
+            <div id="addr-main">
+                <div class="p-spinner"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- ══ MAP MODAL (Add / Edit) ══ -->
+<div class="modal-overlay" id="addr-modal">
+    <div class="map-modal-box">
+        <div class="map-modal-header">
+            <span class="map-modal-title" id="addr-modal-title">Manzil qo'shish</span>
+            <button class="map-modal-close" onclick="closeAddrModal()">✕</button>
+        </div>
+
+        <!-- Leaflet Map -->
+        <div id="addr-map"></div>
+
+        <div class="map-controls">
+            <!-- GPS button -->
+            <button class="btn-gps" id="btn-gps" onclick="useMyLocation()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="9" stroke-width="1.5"/></svg>
+                Mening joylashuvimni aniqlash
+            </button>
+
+            <!-- Selected info -->
+            <div class="map-selected-info" id="map-selected-info">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" stroke-width="2" stroke-linecap="round" flex-shrink="0"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <div>
+                    <div class="map-coords-text" id="map-coords-text">Xaritada nuqta tanlang yoki GPS dan foydalaning</div>
+                    <div class="map-address-text" id="map-address-text"></div>
+                </div>
+            </div>
+
+            <div class="map-hint">📌 Xaritaga bosib manzil belgilang yoki sudrab olib boring</div>
+
+            <div class="modal-error" id="addr-modal-error"></div>
+
+            <div class="map-modal-btns">
+                <button class="modal-cancel" onclick="closeAddrModal()">Bekor qilish</button>
+                <button class="modal-confirm" id="addr-save-btn" onclick="saveAddress()" disabled>Saqlash</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirm Modal -->
+<div class="modal-overlay" id="del-modal">
+    <div class="modal-del-box">
+        <div class="modal-del-icon">🗑️</div>
+        <div class="modal-del-title">Manzilni o'chirish</div>
+        <div class="modal-del-desc">Bu manzilni o'chirishni tasdiqlaysizmi?</div>
+        <div class="del-modal-btns">
+            <button class="modal-cancel" onclick="closeDelModal()">Bekor qilish</button>
+            <button class="modal-confirm" onclick="confirmDelete()" style="background:#ef4444">O'chirish</button>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Confirm Modal -->
+<div class="modal-overlay" id="logout-modal">
+    <div class="modal-del-box">
+        <div class="modal-del-icon">🚪</div>
+        <div class="modal-del-title">Chiqmoqchimisiz?</div>
+        <div class="modal-del-desc">Tizimdan chiqishni tasdiqlang</div>
+        <div class="del-modal-btns">
+            <button class="modal-cancel" onclick="closeLogoutModal()">Bekor qilish</button>
+            <button class="modal-confirm" onclick="confirmLogout()">Ha, chiqish</button>
+        </div>
+    </div>
+</div>
+
+<!-- Leaflet JS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="app.js"></script>
+<script>
+    /* ══════════════════════════════════════════
+       ADDRESSES PAGE CONTROLLER
+    ══════════════════════════════════════════ */
+
+    let _addresses  = [];
+    let _editingId  = null;
+    let _deletingId = null;
+
+    // Map state
+    let _map        = null;
+    let _marker     = null;
+    let _selectedLat = null;
+    let _selectedLng = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateNavAuth();
+        if (!isLoggedIn()) {
+            sessionStorage.setItem('auth_redirect', 'addresses.html');
+            window.location.href = 'login.html';
+            return;
+        }
+        loadData();
+    });
+
+    /* ── LOAD ── */
+    async function loadData() {
+        try {
+            const rp = await authFetch(API + '/profile/');
+            if (rp.status === 401) { clearTokens(); window.location.href = 'login.html'; return; }
+            if (!rp.ok) throw new Error();
+            const u = await rp.json();
+            updateSidebar(u);
+
+            const rl = await authFetch(API + '/location/');
+            if (rl.ok) {
+                const data = await rl.json();
+                _addresses = Array.isArray(data) ? data : (data.results || []);
+            } else {
+                _addresses = [];
+            }
+            renderAddresses();
+        } catch {
+            document.getElementById('addr-main').innerHTML =
+                `<div style="background:#fff;border-radius:16px;padding:60px 20px;text-align:center;color:#ef4444;font-size:14px;">
+             ❌ Ma'lumotlarni yuklab bo'lmadi<br>
+             <a href="index.html" style="color:#e63329;margin-top:14px;display:inline-block;font-weight:600">← Bosh sahifa</a>
+             </div>`;
+        }
+    }
+
+    /* ── RENDER ── */
+    function renderAddresses() {
+        const wrap = document.getElementById('addr-main');
+
+        const addBtn = `
+    <button class="btn-add-addr" onclick="openAddrModal()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Manzil qo'shish
+    </button>`;
+
+        if (!_addresses.length) {
+            wrap.innerHTML = `
+    <div class="addr-header-row">
+        <h1 class="page-title">Mening manzillarim</h1>
+        ${addBtn}
+    </div>
+    <div class="addr-empty">
+        <div class="addr-empty-icon">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#e63329" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <h3>Hali saqlangan manzillar yo'q</h3>
+        <p>Siz hali hech qanday manzil saqlamagansiz. Xaritadan manzilingizni belgilang.</p>
+    </div>`;
+            return;
+        }
+
+        const cards = _addresses.map(addr => `
+    <div class="addr-card">
+        <div class="addr-card-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e63329" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        </div>
+        <div class="addr-card-title">Manzil #${addr.id}</div>
+        <div class="addr-card-coords">
+            📍 ${Number(addr.latitude).toFixed(6)}, ${Number(addr.longitude).toFixed(6)}
+        </div>
+        ${addr.address ? `<div class="addr-card-address">🏠 ${addr.address}</div>` : ''}
+        <div class="addr-card-actions">
+            <button class="addr-btn addr-btn-edit" onclick="openAddrModal(${addr.id})">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;margin-right:4px"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                Tahrirlash
+            </button>
+            <button class="addr-btn addr-btn-del" onclick="openDelModal(${addr.id})">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" style="display:inline;margin-right:4px"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                O'chirish
+            </button>
+        </div>
+    </div>
+    `).join('');
+
+        wrap.innerHTML = `
+    <div class="addr-header-row">
+        <h1 class="page-title">Mening manzillarim</h1>
+        ${addBtn}
+    </div>
+    <div class="addr-grid">${cards}</div>`;
+    }
+
+    /* ── SIDEBAR ── */
+    function updateSidebar(u) {
+        const sbAv = document.getElementById('sb-avatar');
+        if (u.user_profile_image) {
+            sbAv.innerHTML = `<img src="${imgUrl(u.user_profile_image)}" alt="avatar">`;
+        } else {
+            sbAv.innerHTML = ((u.first_name || u.username || '?')[0]).toUpperCase();
+        }
+        const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ');
+        document.getElementById('sb-name').textContent  = fullName || '@' + u.username;
+        document.getElementById('sb-phone').textContent = u.phone_number || u.email || '—';
+    }
+
+    /* ══════════════════════════════════════════
+       MAP LOGIC
+    ══════════════════════════════════════════ */
+
+    // Custom red marker icon
+    const redIcon = L.divIcon({
+        className: '',
+        html: `<div style="
+        width:28px; height:28px;
+        background:#e63329; border-radius:50% 50% 50% 0;
+        transform:rotate(-45deg); border:3px solid #fff;
+        box-shadow:0 3px 10px rgba(230,51,41,0.5);
+    "></div>`,
+        iconSize: [28, 28],
+        iconAnchor: [14, 28],
+        popupAnchor: [0, -30]
+    });
+
+    function initMap(lat, lng) {
+        // Default: Toshkent
+        const startLat = lat || 41.2995;
+        const startLng = lng || 69.2401;
+
+        if (_map) {
+            _map.setView([startLat, startLng], lat ? 15 : 12);
+            if (lat && lng) {
+                placeMarker(lat, lng);
+            } else {
+                if (_marker) { _map.removeLayer(_marker); _marker = null; }
+                resetSelectedInfo();
+            }
+            setTimeout(() => _map.invalidateSize(), 100);
+            return;
+        }
+
+        _map = L.map('addr-map', {
+            center: [startLat, startLng],
+            zoom: lat ? 15 : 12,
+            zoomControl: true
+        });
+
+        // OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 19
+        }).addTo(_map);
+
+        // Click to place marker
+        _map.on('click', function(e) {
+            placeMarker(e.latlng.lat, e.latlng.lng);
+        });
+
+        // If editing, show existing marker
+        if (lat && lng) placeMarker(lat, lng);
+    }
+
+    function placeMarker(lat, lng) {
+        _selectedLat = lat;
+        _selectedLng = lng;
+
+        if (_marker) {
+            _marker.setLatLng([lat, lng]);
+        } else {
+            _marker = L.marker([lat, lng], { icon: redIcon, draggable: true }).addTo(_map);
+
+            // Drag to reposition
+            _marker.on('dragend', function(e) {
+                const pos = e.target.getLatLng();
+                _selectedLat = pos.lat;
+                _selectedLng = pos.lng;
+                updateSelectedInfo(pos.lat, pos.lng);
+                reverseGeocode(pos.lat, pos.lng);
+            });
+        }
+
+        updateSelectedInfo(lat, lng);
+        reverseGeocode(lat, lng);
+
+        // Enable save button
+        document.getElementById('addr-save-btn').disabled = false;
+    }
+
+    function resetSelectedInfo() {
+        _selectedLat = null;
+        _selectedLng = null;
+        document.getElementById('map-coords-text').textContent = 'Xaritada nuqta tanlang yoki GPS dan foydalaning';
+        document.getElementById('map-address-text').textContent = '';
+        document.getElementById('map-selected-info').classList.remove('has-coords');
+        document.getElementById('addr-save-btn').disabled = true;
+    }
+
+    function updateSelectedInfo(lat, lng) {
+        const el = document.getElementById('map-selected-info');
+        el.classList.add('has-coords');
+        document.getElementById('map-coords-text').textContent =
+            `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+
+    // Reverse geocode using Nominatim (OSM)
+    let _geocodeTimer = null;
+    function reverseGeocode(lat, lng) {
+        clearTimeout(_geocodeTimer);
+        _geocodeTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json&accept-language=uz`,
+                    { headers: { 'Accept-Language': 'uz,ru;q=0.8' } }
+                );
+                const data = await res.json();
+                if (data && data.display_name) {
+                    // Show short address
+                    const parts = data.display_name.split(',').slice(0, 4);
+                    document.getElementById('map-address-text').textContent = parts.join(', ');
+                }
+            } catch { /* ignore */ }
+        }, 400);
+    }
+
+    /* ── GPS location ── */
+    function useMyLocation() {
+        const btn = document.getElementById('btn-gps');
+        if (!navigator.geolocation) {
+            alert('Brauzeringiz GPS ni qo\'llab-quvvatlamaydi');
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = 'Aniqlanmoqda...';
+
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                const lat = pos.coords.latitude;
+                const lng = pos.coords.longitude;
+                _map.setView([lat, lng], 16);
+                placeMarker(lat, lng);
+                btn.disabled = false;
+                btn.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="9" stroke-width="1.5"/></svg>
+                Mening joylashuvimni aniqlash`;
+            },
+            (err) => {
+                btn.disabled = false;
+                btn.innerHTML = `
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><circle cx="12" cy="12" r="9" stroke-width="1.5"/></svg>
+                Mening joylashuvimni aniqlash`;
+                let msg = 'Joylashuvni aniqlab bo\'lmadi';
+                if (err.code === 1) msg = 'Joylashuv ruxsati rad etildi. Brauzer sozlamalarini tekshiring.';
+                alert(msg);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    }
+
+    /* ══ OPEN / CLOSE MODAL ══ */
+    function openAddrModal(id = null) {
+        _editingId = id;
+        const errEl = document.getElementById('addr-modal-error');
+        errEl.style.display = 'none';
+
+        document.getElementById('addr-modal-title').textContent =
+            id !== null ? 'Manzilni tahrirlash' : 'Manzil qo\'shish';
+
+        document.getElementById('addr-modal').classList.add('open');
+
+        // Init map after modal is visible
+        setTimeout(() => {
+            if (id !== null) {
+                const addr = _addresses.find(a => a.id === id);
+                if (addr) {
+                    initMap(Number(addr.latitude), Number(addr.longitude));
+                } else {
+                    initMap(null, null);
+                }
+            } else {
+                initMap(null, null);
+            }
+        }, 80);
+    }
+
+    function closeAddrModal() {
+        document.getElementById('addr-modal').classList.remove('open');
+        _editingId = null;
+        resetSelectedInfo();
+    }
+
+    /* ══ SAVE ══ */
+    async function saveAddress() {
+        const btn   = document.getElementById('addr-save-btn');
+        const errEl = document.getElementById('addr-modal-error');
+
+        errEl.style.display = 'none';
+
+        if (_selectedLat === null || _selectedLng === null) {
+            errEl.textContent = '⚠️ Iltimos, xaritada manzil belgilang!';
+            errEl.style.display = 'block'; return;
+        }
+
+        btn.disabled = true; btn.textContent = 'Saqlanmoqda...';
+
+        try {
+            const addressText = document.getElementById('map-address-text').textContent || '';
+            const body = JSON.stringify({
+                latitude:  _selectedLat,
+                longitude: _selectedLng,
+                ...(addressText ? { address: addressText } : {})
+            });
+
+            let r;
+            if (_editingId !== null) {
+                r = await authFetch(`${API}/location/${_editingId}/`, { method: 'PATCH', body });
+            } else {
+                r = await authFetch(`${API}/location/`, { method: 'POST', body });
+            }
+
+            if (!r.ok) {
+                const d = await r.json();
+                const msg = Object.values(d).flat().join(', ');
+                errEl.textContent = '❌ ' + (msg || 'Xato yuz berdi');
+                errEl.style.display = 'block'; return;
+            }
+
+            const d = await r.json();
+
+            if (_editingId !== null) {
+                _addresses = _addresses.map(a => a.id === _editingId ? d : a);
+                toast('Manzil yangilandi!', 'success');
+            } else {
+                _addresses.push(d);
+                toast('Manzil qo\'shildi!', 'success');
+            }
+
+            closeAddrModal();
+            renderAddresses();
+
+        } catch {
+            errEl.textContent = '❌ Server bilan bog\'lanib bo\'lmadi';
+            errEl.style.display = 'block';
+        } finally {
+            btn.disabled = false; btn.textContent = 'Saqlash';
+        }
+    }
+
+    /* ══ DELETE ══ */
+    function openDelModal(id) {
+        _deletingId = id;
+        document.getElementById('del-modal').classList.add('open');
+    }
+    function closeDelModal() {
+        document.getElementById('del-modal').classList.remove('open');
+        _deletingId = null;
+    }
+    async function confirmDelete() {
+        if (_deletingId === null) return;
+        try {
+            const r = await authFetch(`${API}/location/${_deletingId}/`, { method: 'DELETE' });
+            if (r.ok || r.status === 204) {
+                _addresses = _addresses.filter(a => a.id !== _deletingId);
+                closeDelModal();
+                renderAddresses();
+                toast('Manzil o\'chirildi', 'info');
+            } else {
+                toast('O\'chirishda xato yuz berdi', 'error');
+                closeDelModal();
+            }
+        } catch {
+            toast('Server bilan bog\'lanib bo\'lmadi', 'error');
+            closeDelModal();
+        }
+    }
+
+    /* ══ LOGOUT ══ */
+    function openLogoutModal()  { document.getElementById('logout-modal').classList.add('open'); }
+    function closeLogoutModal() { document.getElementById('logout-modal').classList.remove('open'); }
+    function confirmLogout() {
+        closeLogoutModal(); clearTokens(); updateNavAuth();
+        toast('Tizimdan chiqildi', 'info');
+        setTimeout(() => { window.location.href = 'index.html'; }, 700);
+    }
+
+    /* ESC & backdrop */
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeAddrModal(); closeDelModal(); closeLogoutModal(); }
+    });
+    ['addr-modal','del-modal','logout-modal'].forEach(id => {
+        document.getElementById(id)?.addEventListener('click', function(e) {
+            if (e.target === this) { closeAddrModal(); closeDelModal(); closeLogoutModal(); }
+        });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email tasdiqlash — MediaPark</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="otp-page">
+    <div class="otp-card">
+
+        <div class="otp-icon">📩</div>
+        <h1>Kodni kiriting</h1>
+        <p>
+            <span id="otp-email-display" class="otp-email-display">—</span><br>
+            manziliga 6 xonali tasdiqlash kodi yuborildi.
+        </p>
+
+        <div class="otp-inputs">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+        </div>
+
+        <div class="otp-resend">
+            <span id="otp-timer-text"></span>
+            &nbsp;
+            <button id="resend-btn" onclick="resendOtp()" disabled>Qayta yuborish</button>
+        </div>
+
+        <button class="submit-btn" id="verify-btn" onclick="verifyOtpPage()">
+            ✓ Tasdiqlash
+        </button>
+        <div class="auth-error" id="otp-error"></div>
+        <div class="auth-success" id="otp-success"></div>
+
+        <div style="text-align:center;margin-top:22px">
+            <a href="register-start.html" style="font-size:13px;color:var(--muted)">
+                ← Email manzilini o'zgartirish
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<script src="app.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const email = sessionStorage.getItem('otp_email');
+        if (!email) { window.location.href = 'register-start.html'; return; }
+
+        const disp = document.getElementById('otp-email-display');
+        if (disp) disp.textContent = email;
+
+        setupOtpInputs();
+
+        // Auto-focus first input
+        document.querySelector('.otp-inputs input')?.focus();
+
+        // Start 60s countdown before resend enabled
+        startResendTimer(document.getElementById('resend-btn'), 60);
+    });
+</script>
+</body>
+</html>
