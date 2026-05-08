@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sevimlilar — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888;--green:#2ECC71}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1400px;margin:0 auto;padding:0 40px;width:100%}
+
+        /* PAGE */
+        .favorites-page{flex:1;padding:32px 0 60px}
+        .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px}
+        .page-title{font-family:'Exo 2',sans-serif;font-size:24px;font-weight:800;display:flex;align-items:center;gap:10px}
+        .page-count{font-size:14px;color:var(--muted);font-weight:400}
+        .back-link{font-size:14px;color:var(--red);font-weight:600;display:flex;align-items:center;gap:4px}
+        .back-link:hover{text-decoration:underline}
+
+        /* PRODUCTS GRID */
+        .products-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+        .product-card{background:#fff;border-radius:14px;overflow:hidden;position:relative;border:1.5px solid transparent;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+        .product-card:hover{border-color:var(--border);box-shadow:0 4px 18px rgba(0,0,0,.08)}
+        .product-img{position:relative;height:200px;display:flex;align-items:center;justify-content:center;background:#fafafa;padding:16px}
+        .product-img img{max-width:100%;max-height:168px;object-fit:contain}
+        .img-ph{font-size:52px}
+        .product-badges{position:absolute;top:10px;left:10px;display:flex;flex-direction:column;gap:4px}
+        .badge{border-radius:6px;padding:2px 7px;font-size:11px;font-weight:700}
+        .badge-red{background:var(--red);color:#fff}
+        .like-btn{position:absolute;top:10px;right:10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.12);transition:transform .15s;z-index:2}
+        .like-btn:hover{transform:scale(1.12)}
+        .like-btn svg{width:18px;height:18px}
+        .like-btn.liked svg{stroke:var(--red)!important;fill:var(--red)!important}
+        .product-body{padding:12px 14px 14px}
+        .product-name{font-size:13.5px;font-weight:500;line-height:1.4;margin-bottom:10px;min-height:38px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+        .product-monthly{display:inline-block;border:1px solid var(--border);border-radius:6px;padding:3px 8px;font-size:11.5px;color:var(--muted);margin-bottom:10px}
+        .product-bottom{display:flex;align-items:center;justify-content:space-between}
+        .product-price{font-size:16px;font-weight:800}
+        .cart-btn{width:38px;height:38px;background:var(--red);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+        .cart-btn:hover{background:var(--red-dark)}
+        .cart-btn svg{width:18px;height:18px;color:#fff}
+
+        /* EMPTY */
+        .empty-state{text-align:center;padding:80px 20px;background:#fff;border-radius:16px;box-shadow:0 2px 16px rgba(0,0,0,.06)}
+        .empty-icon{font-size:64px;margin-bottom:16px}
+        .empty-title{font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;color:#1e293b;margin-bottom:8px}
+        .empty-desc{font-size:14px;color:var(--muted);margin-bottom:20px;line-height:1.6}
+        .empty-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 24px;background:var(--red);color:#fff;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:background .15s}
+        .empty-btn:hover{background:var(--red-dark)}
+
+        /* SKELETON */
+        .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* TOAST */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;transition:transform .3s ease;pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+
+        /* MODAL */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9999;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#fff;border-radius:16px;padding:40px 36px;max-width:360px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+        .modal-icon{font-size:50px;margin-bottom:14px}
+        .modal-title{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;color:#1e293b;margin-bottom:10px}
+        .modal-desc{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+        .modal-btn{background:var(--red);color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .modal-btn:hover{background:var(--red-dark)}
+
+        @media(max-width:1100px){.products-grid{grid-template-columns:repeat(3,1fr)}}
+        @media(max-width:768px){.products-grid{grid-template-columns:repeat(2,1fr)}.container{padding:0 16px}}
+        @media(max-width:480px){.products-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="favorites-page">
+    <div class="container">
+        <div class="page-header">
+            <h1 class="page-title">
+                ❤️ Sevimlilar
+                <span class="page-count" id="likeCount">—</span>
+            </h1>
+            <a href="index.html" class="back-link">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                Xaridni davom ettirish
+            </a>
+        </div>
+
+        <div class="products-grid" id="productsGrid">
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+            <div class="skeleton" style="height:320px"></div>
+        </div>
+    </div>
+</div>
+
+<div id="footer-container"></div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cartModal" onclick="closeModal('cartModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">🚧</div>
+        <div class="modal-title">Tez kunda!</div>
+        <div class="modal-desc">Savatcha hozircha tayyorlanmoqda.</div>
+        <button class="modal-btn" onclick="closeModal('cartModal')">Tushundim</button>
+    </div>
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="closeModal('loginModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">❤️</div>
+        <div class="modal-title">Kirish kerak</div>
+        <div class="modal-desc">Sevimlilar ro'yxatini ko'rish uchun tizimga kiring</div>
+        <div class="modal-btns" style="display:flex;gap:10px;margin-top:8px">
+            <button class="modal-btn" style="flex:1;background:#f0f0f0;color:#333" onclick="closeModal('loginModal')">Bekor</button>
+            <button class="modal-btn" style="flex:1" onclick="location.href='auth/login.html'">Kirish</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    // NAVBAR + FOOTER
+    function loadHtml(id, path) {
+        fetch(path)
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(html => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = html;
+                el.querySelectorAll('script').forEach(old => {
+                    const s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    old.replaceWith(s);
+                });
+            })
+            .catch(() => {});
+    }
+    loadHtml('navbar-container', 'base/navbar.html');
+    loadHtml('footer-container', 'base/footer.html');
+
+    // TOKEN
+    const Token = {
+        get access(){ return localStorage.getItem('access_token'); },
+        get refresh(){ return localStorage.getItem('refresh_token'); },
+        clear(){ localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); },
+        async tryRefresh(){
+            if(!this.refresh) return false;
+            try{
+                const r = await fetch(`${API}/api/v1/token/refresh/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh:this.refresh})});
+                if(!r.ok){this.clear();return false;}
+                const d = await r.json();
+                localStorage.setItem('access_token',d.access);
+                return true;
+            }catch{return false;}
+        }
+    };
+
+    function isLoggedIn(){ return !!Token.access; }
+
+    async function authFetch(url, opts = {}){
+        if(!Token.access){ openModal('loginModal'); return null; }
+        const go = t => fetch(url, { ...opts, headers: { ...(opts.headers||{}), 'Authorization': `Bearer ${t}` }});
+        let res = await go(Token.access);
+        if(res.status === 401 && await Token.tryRefresh()) res = await go(Token.access);
+        if(res.status === 401){ Token.clear(); openModal('loginModal'); return null; }
+        return res;
+    }
+
+    function mediaUrl(path){
+        if(!path) return null;
+        if(path.startsWith('http')) return path;
+        if(path.startsWith('/media/')) return API+path;
+        return API+'/media/'+path;
+    }
+
+    function openModal(id){ document.getElementById(id).classList.add('open'); }
+    function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+    let toastT;
+    function showToast(msg){
+        const t=document.getElementById('toast');
+        t.textContent=msg; t.classList.add('show');
+        clearTimeout(toastT);
+        toastT=setTimeout(()=>t.classList.remove('show'),2500);
+    }
+
+    const fmt  = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + " so'm";
+    const fmtM = n => 'от ' + new Intl.NumberFormat('ru-RU').format(Math.round(n/12)) + " so'm/oy";
+
+    function getFirstPrice(p){ return Number(p.variants?.[0]?.price ?? p.price ?? 0); }
+
+    // LIKE FUNCTIONS
+    function getLiked(){ try{return new Set(JSON.parse(localStorage.getItem('liked_ids')||'[]'));}catch{return new Set();} }
+    function setLiked(s){ localStorage.setItem('liked_ids',JSON.stringify([...s])); }
+
+    async function toggleLike(productId, btn, e){
+        e.stopPropagation();
+        if(!Token.access){ openModal('loginModal'); return; }
+
+        const liked=getLiked(), was=liked.has(productId);
+        if(was){liked.delete(productId);btn.classList.remove('liked');}
+        else{liked.add(productId);btn.classList.add('liked');}
+        setLiked(liked);
+        showToast(was?'💔 Sevimlilardan olib tashlandi':"❤️ Sevimlilarga qo'shildi");
+
+        try{
+            const res=await authFetch(`${API}/api/v1/procduct/like/${productId}`,{method:'POST'});
+            if(!res||!res.ok){
+                if(was){liked.add(productId);btn.classList.add('liked');}
+                else{liked.delete(productId);btn.classList.remove('liked');}
+                setLiked(liked);
+            }
+            // Agar sevimlilardan o'chirilgan bo'lsa, ro'yxatni yangilash
+            if(was && res && res.ok){
+                loadLikedProducts();
+            }
+        }catch{}
+    }
+
+    // PRODUCT CARD
+    function productCard(p){
+        const liked = getLiked().has(p.id);
+        const activeImgs = p.image?.filter(img => img.is_active);
+        const firstImg = (activeImgs?.length ? activeImgs : p.image)?.[0];
+        const url = firstImg?.image ? mediaUrl(firstImg.image) : null;
+        const imgHtml = url
+            ? `<img src="${url}" alt="${p.name}" onerror="this.outerHTML='<div class=img-ph>📦</div>'"/>`
+            : `<div class="img-ph">📦</div>`;
+        const price = getFirstPrice(p);
+
+        return `
+        <div class="product-card" onclick="location.href='product-detail.html?id=${p.id}'">
+            <div class="product-img">
+                <div class="product-badges"><span class="badge badge-red">0 0 12</span></div>
+                ${imgHtml}
+                <button class="like-btn liked" data-id="${p.id}" onclick="toggleLike(${p.id},this,event)">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="stroke:var(--red);fill:var(--red)">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="product-body">
+                <div class="product-name">${p.name}</div>
+                <div class="product-monthly">${fmtM(price)}</div>
+                <div class="product-bottom">
+                    <div class="product-price">${fmt(price)}</div>
+                    <button class="cart-btn" onclick="event.stopPropagation();openModal('cartModal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>`;
+    }
+
+    // LOAD LIKED PRODUCTS
+    async function loadLikedProducts(){
+        const grid = document.getElementById('productsGrid');
+        const count = document.getElementById('likeCount');
+
+        if(!isLoggedIn()){
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1">
+                    <div class="empty-icon">🔒</div>
+                    <div class="empty-title">Kirish kerak</div>
+                    <div class="empty-desc">Sevimlilar ro'yxatini ko'rish uchun tizimga kiring</div>
+                    <button class="empty-btn" onclick="location.href='auth/login.html'">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Tizimga kirish
+                    </button>
+                </div>`;
+            count.textContent = '';
+            return;
+        }
+
+        try {
+            // ✅ API: GET /api/v1/products/likes/
+            // LikeProductListAPIVew - faqat auth userning aktiv likelarini qaytaradi
+            const res = await authFetch(`${API}/api/v1/products/likes/`);
+
+            if(!res || res.status === 401){
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1">
+                        <div class="empty-icon">🔒</div>
+                        <div class="empty-title">Sessiya tugagan</div>
+                        <div class="empty-desc">Iltimos, qaytadan tizimga kiring</div>
+                        <button class="empty-btn" onclick="location.href='auth/login.html'">Kirish</button>
+                    </div>`;
+                return;
+            }
+
+            if(!res.ok) throw new Error('Failed to load likes');
+
+            const likes = await res.json();
+            // LikeProductListAPIVew: ProductLikeModelSerializer → [{ id, product_id, user_id, is_active }]
+            const likedList = Array.isArray(likes) ? likes : (likes.results || []);
+
+            // Faqat is_active=true bo'lganliklarni olish
+            const activeLikes = likedList.filter(l => l.is_active);
+
+            console.log('Active likes:', activeLikes);
+
+            if(!activeLikes.length){
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1">
+                        <div class="empty-icon">❤️</div>
+                        <div class="empty-title">Sevimlilar bo'sh</div>
+                        <div class="empty-desc">Siz hali hech qanday mahsulotni sevimlilarga qo'shmagansiz. Mahsulotlarni ko'rib chiqing va yoqqanlarini ❤️ bosing.</div>
+                        <button class="empty-btn" onclick="location.href='index.html'">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="15 18 9 12 15 6"/></svg>
+                            Mahsulotlarni ko'rish
+                        </button>
+                    </div>`;
+                count.textContent = '(0 ta)';
+                return;
+            }
+
+            count.textContent = `(${activeLikes.length} ta)`;
+
+            // Har bir like uchun mahsulot ma'lumotlarini olish
+            // product_id bo'yicha product/detail/ API dan olish
+            const productPromises = activeLikes.map(async (like) => {
+                try {
+                    const productRes = await fetch(`${API}/api/v1/product/detail/${like.product_id}/`);
+                    if(productRes.ok){
+                        return await productRes.json();
+                    }
+                } catch {}
+                return null;
+            });
+
+            const products = (await Promise.all(productPromises)).filter(Boolean);
+
+            if(!products.length){
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-title">Mahsulotlar topilmadi</div>
+                        <div class="empty-desc">Sevimli mahsulotlaringiz hozircha mavjud emas</div>
+                    </div>`;
+                return;
+            }
+
+            // localStorage liked_ids ni yangilash
+            const likedIds = new Set(products.map(p => p.id));
+            setLiked(likedIds);
+
+            grid.innerHTML = products.map(p => productCard(p)).join('');
+
+        } catch(e) {
+            console.error('Error loading liked products:', e);
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column:1/-1">
+                    <div class="empty-icon">⚠️</div>
+                    <div class="empty-title">Xatolik yuz berdi</div>
+                    <div class="empty-desc">Sevimlilar ro'yxatini yuklab bo'lmadi. Iltimos, qaytadan urinib ko'ring.</div>
+                    <button class="empty-btn" onclick="loadLikedProducts()">Qayta yuklash</button>
+                </div>`;
+        }
+    }
+
+    // INIT
+    document.addEventListener('DOMContentLoaded', () => {
+        if(!isLoggedIn()){
+            openModal('loginModal');
+        }
+        loadLikedProducts();
+    });
+</script>
+</body>
+</html>

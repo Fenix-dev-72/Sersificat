@@ -11,7 +11,7 @@ load_dotenv()
 
 SECRET_KEY = os.getenv('SECRET_KEY')
 
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['mediapark.zapto.org', 'localhost', '127.0.0.1']
 
@@ -26,7 +26,8 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'apps',
     'rest_framework_simplejwt',
-    'corsheaders'
+    'corsheaders',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
@@ -105,10 +106,10 @@ USE_I18N = True
 USE_TZ = True
 
 
-STATIC_URL = 'static/'
-STATIC_ROOT = join(BASE_DIR, 'static')
+STATIC_URL = '/static/'
+STATIC_ROOT = join(BASE_DIR, 'static_root')
 
-MEDIA_URL = 'media/'
+MEDIA_URL = '/media/'
 MEDIA_ROOT = join(BASE_DIR, 'media')
 
 # =====================SPECTACULAR_SETTINGS=======================

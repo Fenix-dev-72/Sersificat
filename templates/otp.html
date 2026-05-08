@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Email tasdiqlash — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888;--green:#2ECC71}
+        a{text-decoration:none;color:inherit}
+
+        /* OTP PAGE */
+        .otp-page{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+        .otp-card{background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,.08);text-align:center}
+
+        .otp-icon{font-size:52px;margin-bottom:12px}
+        .otp-card h1{font-family:'Exo 2',sans-serif;font-size:24px;font-weight:800;margin-bottom:10px}
+        .otp-card p{color:var(--muted);font-size:14px;line-height:1.6;margin-bottom:28px}
+        .otp-email-display{font-weight:700;color:#1a1a1a;font-size:15px;word-break:break-all}
+
+        .otp-inputs{display:flex;gap:8px;justify-content:center;margin-bottom:18px}
+        .otp-inputs input{width:50px;height:56px;border:1.5px solid var(--border);border-radius:10px;text-align:center;font-size:22px;font-weight:700;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;background:#fafafa}
+        .otp-inputs input:focus{border-color:var(--red);background:#fff}
+
+        .otp-resend{display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:20px;font-size:13px;color:var(--muted)}
+        .otp-resend button{background:none;border:none;color:var(--red);font-weight:600;cursor:pointer;font-size:13px;font-family:'Inter',sans-serif}
+        .otp-resend button:hover{text-decoration:underline}
+        .otp-resend button:disabled{color:var(--muted);cursor:not-allowed;text-decoration:none}
+
+        .submit-btn{width:100%;height:50px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px}
+        .submit-btn:hover{background:var(--red-dark)}
+        .submit-btn:disabled{opacity:.6;cursor:not-allowed}
+
+        .auth-error{background:#ffe8e8;color:#c4001a;border-radius:10px;padding:12px 16px;font-size:13px;margin-top:16px;display:none;text-align:center}
+        .auth-error.show{display:block}
+        .auth-success{background:#e8ffe8;color:#1a7a1a;border-radius:10px;padding:12px 16px;font-size:13px;margin-top:16px;display:none;text-align:center}
+        .auth-success.show{display:block}
+
+        .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:768px){
+            .otp-card{padding:32px 24px}
+            .otp-inputs input{width:44px;height:50px;font-size:20px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar-container"></div>
+
+<!-- OTP FORM -->
+<div class="otp-page">
+    <div class="otp-card">
+
+        <div class="otp-icon">📩</div>
+        <h1>Kodni kiriting</h1>
+        <p>
+            <span id="otp-email-display" class="otp-email-display">—</span><br>
+            manziliga 6 xonali tasdiqlash kodi yuborildi.
+        </p>
+
+        <div class="otp-inputs" id="otp-inputs">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+            <input type="text" inputmode="numeric" maxlength="1" autocomplete="off">
+        </div>
+
+        <div class="otp-resend">
+            <span id="otp-timer-text">60 soniyadan keyin qayta yuborish mumkin</span>
+            &nbsp;
+            <button id="resend-btn" onclick="resendOtp()" disabled>Qayta yuborish</button>
+        </div>
+
+        <button class="submit-btn" id="verify-btn" onclick="verifyOtpPage()">
+            <span id="verify-text">✓ Tasdiqlash</span>
+            <span id="verify-spinner" style="display:none"></span>
+        </button>
+        <div class="auth-error" id="otp-error"></div>
+        <div class="auth-success" id="otp-success"></div>
+
+        <div style="text-align:center;margin-top:22px">
+            <a href="register-start.html" style="font-size:13px;color:var(--muted)">
+                ← Email manzilini o'zgartirish
+            </a>
+        </div>
+
+    </div>
+</div>
+
+<!-- FOOTER -->
+<div id="footer-container"></div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    // ============================================================
+    // NAVBAR + FOOTER
+    // ============================================================
+    function loadHtml(id, path) {
+        fetch(path)
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(html => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = html;
+                el.querySelectorAll('script').forEach(old => {
+                    const s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    old.replaceWith(s);
+                });
+            })
+            .catch(() => {});
+    }
+    loadHtml('navbar-container', 'base/navbar.html');
+    loadHtml('footer-container', 'base/footer.html');
+
+    // ============================================================
+    // TOKEN CHECK
+    // ============================================================
+    if(localStorage.getItem('access_token')){
+        location.href = 'index.html';
+    }
+
+    // ============================================================
+    // GLOBAL FUNCTIONS (app.js da bo'lishi kerak bo'lganlar)
+    // ============================================================
+
+    // Toast xabarnoma
+    function toast(msg, type){
+        const t = document.createElement('div');
+        t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;white-space:nowrap;transition:transform .3s ease;pointer-events:none';
+        t.textContent = msg;
+        document.body.appendChild(t);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                t.style.transform = 'translateX(-50%) translateY(80px)';
+                setTimeout(() => t.remove(), 300);
+            }, 2500);
+        });
+    }
+
+    // OTP input sozlash
+    function setupOtpInputs(){
+        const inputs = document.querySelectorAll('.otp-inputs input');
+        inputs.forEach((inp, i) => {
+            inp.addEventListener('input', function(){
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if(this.value && i < inputs.length - 1) inputs[i+1].focus();
+            });
+            inp.addEventListener('keydown', function(e){
+                if(e.key === 'Backspace' && !this.value && i > 0) inputs[i-1].focus();
+            });
+            inp.addEventListener('paste', function(e){
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text').replace(/[^0-9]/g, '').slice(0,6);
+                paste.split('').forEach((d, j) => { if(inputs[j]) inputs[j].value = d; });
+                if(inputs[Math.min(paste.length, 5)]) inputs[Math.min(paste.length, 5)].focus();
+            });
+        });
+    }
+
+    // Taymer
+    function startResendTimer(btn, seconds = 60){
+        const timerText = document.getElementById('otp-timer-text');
+        btn.disabled = true;
+        const tick = () => {
+            if(seconds <= 0){
+                btn.disabled = false;
+                timerText.textContent = 'Kodni qayta yuborishingiz mumkin';
+                return;
+            }
+            timerText.textContent = seconds + ' soniyadan keyin qayta yuborish mumkin';
+            seconds--;
+            setTimeout(tick, 1000);
+        };
+        tick();
+    }
+
+    // Xatolik ko'rsatish
+    function showError(msg){
+        const el = document.getElementById('otp-error');
+        const suc = document.getElementById('otp-success');
+        el.textContent = '❌ ' + msg;
+        el.className = 'auth-error show';
+        if(suc) suc.className = 'auth-success';
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
+    // Muvaffaqiyat ko'rsatish
+    function showSuccess(msg){
+        const el = document.getElementById('otp-success');
+        const err = document.getElementById('otp-error');
+        el.textContent = '✅ ' + msg;
+        el.className = 'auth-success show';
+        if(err) err.className = 'auth-error';
+        setTimeout(() => el.classList.remove('show'), 5000);
+    }
+
+    // Loading holati
+    function setLoading(isLoading){
+        const btn = document.getElementById('verify-btn');
+        const text = document.getElementById('verify-text');
+        const spinner = document.getElementById('verify-spinner');
+        if(isLoading){
+            btn.disabled = true;
+            text.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            spinner.innerHTML = '<span class="spinner"></span>';
+        } else {
+            btn.disabled = false;
+            text.style.display = 'inline';
+            spinner.style.display = 'none';
+        }
+    }
+
+    // Kodni olish
+    function getCode(){
+        const inputs = document.querySelectorAll('.otp-inputs input');
+        return Array.from(inputs).map(i => i.value).join('');
+    }
+
+    // ============================================================
+    // VERIFY OTP
+    // ============================================================
+    window.verifyOtpPage = async function(){
+        const code = getCode();
+        const email = sessionStorage.getItem('otp_email');
+
+        if(code.length !== 6){
+            showError('6 xonali kodni to\'liq kiriting');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${API}/api/v1/verify/otp-verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, code: code })
+            });
+
+            const data = await res.json();
+
+            if(res.ok){
+                sessionStorage.setItem('otp_verified', '1');
+                showSuccess('Email muvaffaqiyatli tasdiqlandi!');
+                toast('Tasdiqlandi!', 'success');
+                setTimeout(() => { window.location.href = 'register.html'; }, 1500);
+            } else {
+                const msg = data.detail || data.code?.[0] || 'Noto\'g\'ri kod kiritildi';
+                showError(msg);
+                // Inputlarni tozalash
+                document.querySelectorAll('.otp-inputs input').forEach(i => i.value = '');
+                document.querySelector('.otp-inputs input')?.focus();
+            }
+        } catch(e){
+            showError('Server bilan bog\'lanib bo\'lmadi');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ============================================================
+    // RESEND OTP
+    // ============================================================
+    window.resendOtp = async function(){
+        const btn = document.getElementById('resend-btn');
+        if(btn.disabled) return;
+
+        const email = sessionStorage.getItem('otp_email');
+
+        try {
+            const res = await fetch(`${API}/api/v1/verify/email-verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email })
+            });
+
+            if(res.ok){
+                showSuccess('Kod qayta yuborildi!');
+                startResendTimer(btn, 60);
+                document.querySelectorAll('.otp-inputs input').forEach(i => i.value = '');
+                document.querySelector('.otp-inputs input')?.focus();
+            } else {
+                const data = await res.json();
+                showError(data.detail || 'Xatolik yuz berdi');
+            }
+        } catch(e){
+            showError('Server bilan bog\'lanib bo\'lmadi');
+        }
+    };
+
+    // ============================================================
+    // INIT
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        const email = sessionStorage.getItem('otp_email');
+        if(!email){ window.location.href = 'register-start.html'; return; }
+
+        const disp = document.getElementById('otp-email-display');
+        if(disp) disp.textContent = email;
+
+        setupOtpInputs();
+
+        // Auto-focus first input
+        document.querySelector('.otp-inputs input')?.focus();
+
+        // Start 60s countdown before resend enabled
+        startResendTimer(document.getElementById('resend-btn'), 60);
+    });
+
+    // Enter tugmasi
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Enter') verifyOtpPage();
+    });
+</script>
+</body>
+</html>

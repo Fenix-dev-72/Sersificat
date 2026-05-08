@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mahsulotlar — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f4f4f6;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e5e5e5;--muted:#999}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1440px;margin:0 auto;padding:0 24px;width:100%}
+
+        .breadcrumb{padding:14px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+        .breadcrumb a{color:var(--muted)}.breadcrumb a:hover{color:#333}
+        .breadcrumb .sep{color:#ddd}
+
+        .products-page{flex:1;padding-bottom:60px}
+        .products-layout{display:grid;grid-template-columns:300px 1fr;gap:20px;align-items:start}
+
+        /* ══════════ SIDEBAR ══════════ */
+        .filter-sidebar{background:#fff;border-radius:12px;border:1px solid var(--border);position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto;scrollbar-width:thin;scrollbar-color:#e0e0e0 transparent}
+        .filter-sidebar::-webkit-scrollbar{width:4px}
+        .filter-sidebar::-webkit-scrollbar-thumb{background:#e0e0e0;border-radius:4px}
+
+        .filter-section{border-bottom:1px solid var(--border)}
+        .filter-section:last-of-type{border-bottom:none}
+        .filter-section-header{display:flex;align-items:center;justify-content:space-between;padding:15px 20px;cursor:pointer;user-select:none}
+        .filter-section-title{font-size:15px;font-weight:700;color:#1a1a1a}
+        .fchev{color:#999;display:flex;transition:transform .2s}
+        .fchev.open{transform:rotate(180deg)}
+        .fchev svg{width:16px;height:16px}
+        .filter-section-body{padding:0 20px 14px}
+        .filter-section-body.hidden{display:none}
+
+        /* Search */
+        .fsearch-wrap{position:relative;margin-bottom:10px}
+        .fsearch-wrap input{width:100%;padding:8px 34px 8px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:#333;background:#fafafa;transition:border-color .15s}
+        .fsearch-wrap input:focus{border-color:#ccc;background:#fff}
+        .fsearch-wrap input::placeholder{color:#bbb}
+        .fsearch-icon{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:#bbb;pointer-events:none;display:flex}
+        .fsearch-icon svg{width:15px;height:15px}
+
+        /* Filter items */
+        .filter-item{display:flex;align-items:center;gap:10px;padding:5px 0;cursor:pointer}
+        .filter-item input{display:none}
+        .cbox{width:18px;height:18px;border:2px solid #d0d0d0;border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s}
+        .cbox.radio{border-radius:50%}
+        .filter-item input:checked ~ .cbox{background:var(--red);border-color:var(--red)}
+        .cbox svg{width:11px;height:11px;stroke:#fff;display:none}
+        .filter-item input:checked ~ .cbox svg{display:block}
+        .flabel{font-size:13.5px;color:#555;flex:1;line-height:1.3}
+        .filter-item:hover .flabel{color:#1a1a1a}
+        .fcount{font-size:12px;color:#bbb}
+
+        /* Show more */
+        .show-more-btn{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font-size:13px;font-weight:600;color:var(--red);background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0}
+        .show-more-btn:hover{opacity:.8}
+        .show-more-btn svg{width:14px;height:14px}
+
+        /* ══ Price ══ */
+        .price-inputs-row{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+        .pinp{flex:1;padding:9px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:#333;transition:border-color .15s;width:100%}
+        .pinp:focus{border-color:var(--red)}
+        .psep{color:#bbb;font-size:14px;flex-shrink:0}
+
+        .range-wrap{position:relative;height:24px;margin-bottom:2px}
+        .range-track{position:absolute;top:50%;left:0;right:0;height:3px;background:#e0e0e0;border-radius:2px;transform:translateY(-50%)}
+        .range-fill{position:absolute;top:50%;height:3px;background:var(--red);border-radius:2px;transform:translateY(-50%)}
+        .range-wrap input[type="range"]{position:absolute;top:50%;width:100%;-webkit-appearance:none;appearance:none;background:transparent;transform:translateY(-50%);pointer-events:none;margin:0}
+        .range-wrap input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--red);cursor:pointer;pointer-events:all;border:2.5px solid #fff;box-shadow:0 1px 5px rgba(232,0,28,.3)}
+        .range-wrap input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--red);cursor:pointer;pointer-events:all;border:2.5px solid #fff}
+
+        /* ══ Color swatches ══ */
+        .color-grid{display:flex;flex-wrap:wrap;gap:8px;padding:2px 0}
+        .color-swatch{position:relative;width:28px;height:28px;border-radius:50%;cursor:pointer;border:2.5px solid transparent;transition:all .15s;flex-shrink:0}
+        .color-swatch:hover{transform:scale(1.1)}
+        .color-swatch.selected{border-color:var(--red) !important;box-shadow:0 0 0 2px #fff inset}
+        .color-swatch input{display:none}
+        .color-swatch-inner{width:100%;height:100%;border-radius:50%;border:1px solid rgba(0,0,0,.12)}
+        .color-label-row{display:flex;align-items:center;gap:6px;padding:5px 0;cursor:pointer}
+        .color-dot{width:16px;height:16px;border-radius:50%;border:1px solid rgba(0,0,0,.12);flex-shrink:0}
+        .color-label-row input{display:none}
+        .color-label-row.selected .flabel{color:#1a1a1a;font-weight:600}
+
+        /* ══ Size chips ══ */
+        .size-grid{display:flex;flex-wrap:wrap;gap:6px;padding:2px 0}
+        .size-chip{position:relative;cursor:pointer}
+        .size-chip input{display:none}
+        .size-chip-label{display:inline-block;padding:5px 12px;border:1.5px solid var(--border);border-radius:6px;font-size:12.5px;font-weight:600;color:#555;transition:all .15s;background:#fff;user-select:none}
+        .size-chip:hover .size-chip-label{border-color:#bbb;color:#333}
+        .size-chip input:checked ~ .size-chip-label{background:var(--red);color:#fff;border-color:var(--red)}
+
+        /* ══ Toggle ══ */
+        .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+        .toggle-label{font-size:15px;font-weight:600;color:#1a1a1a}
+        .tsw{width:46px;height:26px;background:#e0e0e0;border-radius:13px;cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+        .tsw.on{background:var(--red)}
+        .tsw::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;background:#fff;border-radius:50%;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+        .tsw.on::after{transform:translateX(20px)}
+
+        /* Clear btn */
+        .filter-clear-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:calc(100% - 40px);margin:14px 20px;padding:11px;border:1.5px solid var(--border);border-radius:8px;background:#fff;font-size:13.5px;font-weight:600;color:#555;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s}
+        .filter-clear-btn:hover{border-color:#bbb;color:#333}
+        .filter-clear-btn svg{width:16px;height:16px}
+
+        /* ══════════ MAIN ══════════ */
+        .sort-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px;flex-wrap:wrap}
+        .sort-tabs{display:flex;background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden}
+        .sort-tab{padding:9px 15px;font-size:13px;font-weight:600;cursor:pointer;background:none;border:none;border-right:1px solid var(--border);font-family:'Inter',sans-serif;color:#666;transition:all .15s;white-space:nowrap}
+        .sort-tab:last-child{border-right:none}
+        .sort-tab:hover{background:#fafafa;color:#333}
+        .sort-tab.active{background:var(--red);color:#fff}
+        .sort-tab.special{color:var(--red)}
+
+        .view-toggle{display:flex;gap:4px}
+        .view-btn{width:36px;height:36px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#bbb;transition:all .15s}
+        .view-btn.active,.view-btn:hover{border-color:var(--red);color:var(--red)}
+
+        /* ══ LIST CARDS ══ */
+        .products-list{display:flex;flex-direction:column;gap:12px}
+        .plc{background:#fff;border-radius:12px;border:1px solid var(--border);display:grid;grid-template-columns:200px 1fr 220px;overflow:hidden;cursor:pointer;transition:box-shadow .15s,border-color .15s}
+        .plc:hover{box-shadow:0 4px 20px rgba(0,0,0,.07);border-color:#ddd}
+        .plc-img-wrap{height:196px;display:flex;align-items:center;justify-content:center;background:#fafafa;padding:14px}
+        .plc-img-wrap img{max-width:100%;max-height:168px;object-fit:contain}
+        .img-ph{font-size:48px}
+        .plc-body{padding:18px 14px;display:flex;flex-direction:column;gap:4px}
+        .plc-sub{font-size:11px;color:#bbb;margin-bottom:2px}
+        .plc-name{font-size:15px;font-weight:600;color:#1a1a1a;line-height:1.4;margin-bottom:6px}
+        .plc-specs{display:flex;flex-direction:column;gap:3px}
+        .plc-spec{font-size:13px;display:flex;gap:8px}
+        .plc-sk{color:#aaa;min-width:110px;flex-shrink:0}
+        .plc-sv{color:#333;font-weight:500}
+        .plc-btns{display:flex;align-items:center;gap:12px;margin-top:10px}
+        .plc-btn{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:600;color:#666;background:none;border:none;cursor:pointer;font-family:'Inter',sans-serif;padding:0;transition:color .15s}
+        .plc-btn:hover,.plc-btn.liked{color:var(--red)}
+        .plc-btn svg{width:15px;height:15px;stroke:currentColor;fill:none}
+        .plc-btn.liked svg{fill:var(--red)}
+        .plc-right{padding:18px;display:flex;flex-direction:column;justify-content:space-between;border-left:1px solid var(--border)}
+        .plc-toliv{font-size:11.5px;color:#bbb;margin-bottom:4px}
+        .plc-price{font-size:22px;font-weight:800;color:#1a1a1a;white-space:nowrap}
+        .plc-monthly{font-size:11.5px;color:#bbb;margin-top:2px}
+        .plc-add-btn{width:100%;padding:12px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:7px;transition:background .15s}
+        .plc-add-btn:hover{background:var(--red-dark)}
+        .plc-add-btn svg{width:17px;height:17px}
+
+        /* ══ GRID CARDS ══ */
+        .products-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+        .pgc{background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:box-shadow .15s,border-color .15s;position:relative}
+        .pgc:hover{box-shadow:0 4px 20px rgba(0,0,0,.07);border-color:#ddd}
+        .pgc-img{height:180px;display:flex;align-items:center;justify-content:center;background:#fafafa;padding:14px;position:relative}
+        .pgc-img img{max-width:100%;max-height:152px;object-fit:contain}
+        .pgc-like{position:absolute;top:9px;right:9px;width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.92);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.1);transition:transform .15s}
+        .pgc-like:hover{transform:scale(1.1)}
+        .pgc-like svg{width:16px;height:16px;stroke:#ccc;fill:none;transition:all .15s}
+        .pgc-like.liked svg{stroke:var(--red);fill:var(--red)}
+        .pgc-body{padding:12px}
+        .pgc-sub{font-size:11px;color:#bbb;margin-bottom:2px}
+        .pgc-name{font-size:13px;font-weight:500;line-height:1.4;min-height:36px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:6px;color:#1a1a1a}
+        .pgc-monthly{font-size:11px;color:#bbb;margin-bottom:4px}
+        .pgc-price{font-size:16px;font-weight:800;color:#1a1a1a;margin-bottom:10px}
+        .pgc-bottom{display:flex;justify-content:flex-end}
+        .pgc-cart{width:36px;height:36px;background:var(--red);border:none;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .15s}
+        .pgc-cart:hover{background:var(--red-dark)}
+        .pgc-cart svg{width:17px;height:17px;color:#fff}
+
+        /* Pagination */
+        .pagination{display:flex;align-items:center;justify-content:center;gap:4px;margin-top:24px}
+        .page-btn{padding:8px 14px;border-radius:8px;border:1.5px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .12s;font-family:'Inter',sans-serif}
+        .page-btn:hover{border-color:#bbb}
+        .page-btn.active{background:var(--red);color:#fff;border-color:var(--red)}
+        .page-btn:disabled{opacity:.4;cursor:not-allowed}
+
+        /* Skeleton */
+        .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        /* Toast */
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+
+        /* Modals */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9999;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#fff;border-radius:16px;padding:40px 36px;max-width:360px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+        .modal-icon{font-size:50px;margin-bottom:14px}
+        .modal-title{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;margin-bottom:10px}
+        .modal-desc{font-size:15px;color:var(--muted);line-height:1.6;margin-bottom:24px}
+        .modal-btn{background:var(--red);color:#fff;border:none;border-radius:10px;padding:12px 32px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .modal-btn:hover{background:var(--red-dark)}
+        .modal-btns{display:flex;gap:10px;margin-top:8px}
+        .modal-btn-gray{flex:1;background:#f0f0f0;color:#333;border:none;border-radius:10px;padding:12px;font-size:15px;font-weight:600;cursor:pointer}
+
+        /* Mobile */
+        .mobile-filter-btn{display:none;padding:10px 16px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;align-items:center;gap:6px;font-family:'Inter',sans-serif;margin-bottom:12px}
+        .filter-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:500;align-items:flex-end}
+        .filter-overlay.open{display:flex}
+        .filter-drawer{background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:85vh;overflow-y:auto}
+        .empty-state{background:#fff;border-radius:12px;border:1px solid var(--border);padding:60px 20px;text-align:center}
+
+        @media(max-width:1200px){.products-grid{grid-template-columns:repeat(3,1fr)}.products-layout{grid-template-columns:260px 1fr}}
+        @media(max-width:960px){.products-layout{grid-template-columns:1fr}.filter-sidebar{display:none}.mobile-filter-btn{display:flex}.products-grid{grid-template-columns:repeat(2,1fr)}.plc{grid-template-columns:160px 1fr auto}}
+        @media(max-width:600px){.products-grid{grid-template-columns:repeat(2,1fr)}.plc{grid-template-columns:1fr}.plc-right{border-left:none;border-top:1px solid var(--border)}.container{padding:0 12px}}
+    </style>
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<div class="products-page">
+    <div class="container">
+
+        <nav class="breadcrumb">
+            <a href="index.html">Bosh sahifa</a>
+            <span class="sep">›</span>
+            <span id="breadName">Mahsulotlar</span>
+        </nav>
+
+        <button class="mobile-filter-btn" onclick="toggleMobileFilter()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+            Filtrlar
+            <span id="mobCount" style="display:none;background:rgba(255,255,255,.3);border-radius:10px;padding:1px 7px;font-size:11px"></span>
+        </button>
+
+        <div class="products-layout">
+
+            <!-- ═══ SIDEBAR ═══ -->
+            <aside class="filter-sidebar" id="filterSidebar">
+
+                <!-- Subkategoriya -->
+                <div class="filter-section">
+                    <div class="filter-section-header" onclick="toggleSection(this)">
+                        <span class="filter-section-title">Kategoriya:</span>
+                        <span class="fchev open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+                    </div>
+                    <div class="filter-section-body" id="subcategoryFilters">
+                        <div class="fsearch-wrap">
+                            <input type="text" placeholder="Qidirish" oninput="searchSubs(this.value)"/>
+                            <span class="fsearch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                        </div>
+                        <div id="subcategoryList"></div>
+                        <button class="show-more-btn" id="subMoreBtn" onclick="toggleMoreSubs()" style="display:none">Ko'proq <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    </div>
+                </div>
+
+                <!-- Brend -->
+                <div class="filter-section">
+                    <div class="filter-section-header" onclick="toggleSection(this)">
+                        <span class="filter-section-title">Ishlab chiqaruvchi:</span>
+                        <span class="fchev open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="fsearch-wrap">
+                            <input type="text" placeholder="Qidirish" oninput="searchBrands(this.value)"/>
+                            <span class="fsearch-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+                        </div>
+                        <div id="brandList"></div>
+                        <button class="show-more-btn" id="brandMoreBtn" onclick="toggleMoreBrands()" style="display:none">Ko'proq <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg></button>
+                    </div>
+                </div>
+
+                <!-- Narx -->
+                <div class="filter-section">
+                    <div class="filter-section-header" onclick="toggleSection(this)">
+                        <span class="filter-section-title">Narxi, so'm</span>
+                        <span class="fchev open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="price-inputs-row">
+                            <input class="pinp" type="number" id="priceMin" placeholder="0" oninput="onPriceInput()" onchange="onPriceChange()"/>
+                            <span class="psep">—</span>
+                            <input class="pinp" type="number" id="priceMax" placeholder="0" oninput="onPriceInput()" onchange="onPriceChange()"/>
+                        </div>
+                        <div class="range-wrap">
+                            <div class="range-track"></div>
+                            <div class="range-fill" id="rangeFill"></div>
+                            <input type="range" id="rangeMin" min="0" max="100000000" step="10000" oninput="onRangeInput()" onchange="onRangeChange()"/>
+                            <input type="range" id="rangeMax" min="0" max="100000000" step="10000" oninput="onRangeInput()" onchange="onRangeChange()"/>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rang -->
+                <div class="filter-section">
+                    <div class="filter-section-header" onclick="toggleSection(this)">
+                        <span class="filter-section-title">Rang:</span>
+                        <span class="fchev open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="color-grid" id="colorList">
+                            <div style="font-size:12px;color:#bbb">Yuklanmoqda...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- O'lcham -->
+                <div class="filter-section">
+                    <div class="filter-section-header" onclick="toggleSection(this)">
+                        <span class="filter-section-title">O'lcham:</span>
+                        <span class="fchev open"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg></span>
+                    </div>
+                    <div class="filter-section-body">
+                        <div class="size-grid" id="sizeList">
+                            <div style="font-size:12px;color:#bbb">Yuklanmoqda...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Faqat mavjudlar -->
+                <div class="toggle-row">
+                    <span class="toggle-label">Faqat mavjudlar</span>
+                    <div class="tsw" id="stockToggle" onclick="toggleStock()"></div>
+                </div>
+
+                <!-- O'chirish -->
+                <button class="filter-clear-btn" onclick="resetAllFilters()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+                    O'chirish
+                </button>
+            </aside>
+
+            <!-- ═══ MAIN ═══ -->
+            <div class="main-content">
+                <div class="sort-row">
+                    <div class="sort-tabs">
+                        <button class="sort-tab active" data-sort="" onclick="setSorting('',this)">Yangi</button>
+                        <button class="sort-tab" data-sort="name" onclick="setSorting('name',this)">Ommabop</button>
+                        <button class="sort-tab" data-sort="productvalue__price" onclick="setSorting('max_price',this)">Arzonroq</button>
+                        <button class="sort-tab" data-sort="-productvalue__price" onclick="setSorting('-min_price',this)">Qimmatroq</button>
+                        <button class="sort-tab special" data-sort="discount" onclick="setSorting('discount',this)">Chegirma bilan</button>
+                    </div>
+                    <div class="view-toggle">
+                        <button class="view-btn" id="listViewBtn" onclick="setView('list')" title="Ro'yxat">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                        </button>
+                        <button class="view-btn active" id="gridViewBtn" onclick="setView('grid')" title="Grid">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="productsContainer">
+                    <div class="products-grid">
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                        <div class="skeleton" style="height:300px"></div>
+                    </div>
+                </div>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="footer-container"></div>
+
+<div class="modal-overlay" id="cartModal" onclick="closeModal('cartModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">🚧</div><div class="modal-title">Tez kunda!</div>
+        <div class="modal-desc">Savatcha hozircha tayyorlanmoqda.</div>
+        <button class="modal-btn" onclick="closeModal('cartModal')">Tushundim</button>
+    </div>
+</div>
+<div class="modal-overlay" id="loginModal" onclick="closeModal('loginModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">❤️</div><div class="modal-title">Kirish kerak</div>
+        <div class="modal-desc">Sevimlilar uchun tizimga kiring</div>
+        <div class="modal-btns">
+            <button class="modal-btn-gray" onclick="closeModal('loginModal')">Bekor</button>
+            <button class="modal-btn" onclick="location.href='auth/login.html'">Kirish</button>
+        </div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+<div class="filter-overlay" id="filterOverlay" onclick="closeMobileFilter()">
+    <div class="filter-drawer" id="filterDrawer" onclick="event.stopPropagation()"></div>
+</div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    // ═══ PARTIALS ═══
+    function loadHtml(id,path){fetch(path).then(r=>r.ok?r.text():Promise.reject()).then(html=>{const el=document.getElementById(id);if(!el)return;el.innerHTML=html;el.querySelectorAll('script').forEach(old=>{const s=document.createElement('script');s.textContent=old.textContent;old.replaceWith(s);});}).catch(()=>{});}
+    loadHtml('navbar-container','base/navbar.html');
+    loadHtml('footer-container','base/footer.html');
+
+    // ═══ TOKEN ═══
+    const Token={
+        get access(){return localStorage.getItem('access_token');},
+        get refresh(){return localStorage.getItem('refresh_token');},
+        clear(){localStorage.removeItem('access_token');localStorage.removeItem('refresh_token');},
+        async tryRefresh(){if(!this.refresh)return false;try{const r=await fetch(`${API}/api/v1/token/refresh/`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refresh:this.refresh})});if(!r.ok){this.clear();return false;}const d=await r.json();localStorage.setItem('access_token',d.access);return true;}catch{return false;}}
+    };
+    async function authFetch(url,opts={}){if(!Token.access){openModal('loginModal');return null;}const go=t=>fetch(url,{...opts,headers:{...(opts.headers||{}),'Authorization':`Bearer ${t}`}});let res=await go(Token.access);if(res.status===401&&await Token.tryRefresh())res=await go(Token.access);if(res.status===401){Token.clear();openModal('loginModal');return null;}return res;}
+
+    // ═══ HELPERS ═══
+    function mediaUrl(p){if(!p)return null;if(p.startsWith('http'))return p;if(p.startsWith('/media/'))return API+p;return API+'/media/'+p;}
+    function openModal(id){document.getElementById(id).classList.add('open');}
+    function closeModal(id){document.getElementById(id).classList.remove('open');}
+    let toastT;
+    function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2500);}
+    const fmt=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n))+" so'm";
+    const fmtM=n=>new Intl.NumberFormat('ru-RU').format(Math.round(n/12))+" so'm/oyiga*";
+    function getPrice(p){return Number(p.variants?.[0]?.price??p.price??0);}
+    function getLiked(){try{return new Set(JSON.parse(localStorage.getItem('liked_ids')||'[]'));}catch{return new Set();}}
+    function setLiked(s){localStorage.setItem('liked_ids',JSON.stringify([...s]));}
+    async function toggleLike(pid,btn,e){
+        e.stopPropagation();
+        if(!Token.access){openModal('loginModal');return;}
+        const liked=getLiked(),was=liked.has(pid);
+        if(was){liked.delete(pid);btn.classList.remove('liked');}else{liked.add(pid);btn.classList.add('liked');}
+        setLiked(liked);showToast(was?'💔 Sevimlilardan olib tashlandi':"❤️ Sevimlilarga qo'shildi");
+        try{const res=await authFetch(`${API}/api/v1/procduct/like/${pid}`,{method:'POST'});if(!res||!res.ok){if(was){liked.add(pid);btn.classList.add('liked');}else{liked.delete(pid);btn.classList.remove('liked');}setLiked(liked);}}catch{}
+    }
+
+    // ═══ STATE ═══
+    let allBrands=[], allSubcategories=[], allColors=[], allSizes=[];
+    let currentSort='', currentPage=1, showAllBrands=false, showAllSubs=false;
+    let inStockOnly=false, currentView='grid', currentProducts=[];
+    let priceAbsMin=0, priceAbsMax=100000000;
+    const itemsPerPage=20;
+    let priceDebounceTimer=null;
+
+    const urlParams=new URLSearchParams(location.search);
+    let activeSubName=urlParams.get('subcategory')||null;
+
+    // ═══ RANGE SLIDER ═══
+    function initRange(mn,mx){
+        priceAbsMin=mn; priceAbsMax=mx;
+        const rn=document.getElementById('rangeMin'), rx=document.getElementById('rangeMax');
+        rn.min=mn; rn.max=mx; rn.value=mn;
+        rx.min=mn; rx.max=mx; rx.value=mx;
+        document.getElementById('priceMin').value=mn;
+        document.getElementById('priceMax').value=mx;
+        updateFill();
+    }
+    function updateFill(){
+        const rn=document.getElementById('rangeMin'),rx=document.getElementById('rangeMax');
+        const fill=document.getElementById('rangeFill');
+        const total=priceAbsMax-priceAbsMin; if(total<=0)return;
+        const l=((rn.value-priceAbsMin)/total)*100, r=((rx.value-priceAbsMin)/total)*100;
+        fill.style.left=l+'%'; fill.style.width=(r-l)+'%';
+    }
+
+    // Slider tortilganda — faqat rangni yangilaymiz, qo'yib yuborganda fetch
+    function onRangeInput(){
+        const rn=document.getElementById('rangeMin'), rx=document.getElementById('rangeMax');
+        if(parseInt(rn.value)>parseInt(rx.value)){const t=rn.value;rn.value=rx.value;rx.value=t;}
+        document.getElementById('priceMin').value=rn.value;
+        document.getElementById('priceMax').value=rx.value;
+        updateFill();
+    }
+    function onRangeChange(){
+        // Slider qo'yib yuborilganda — fetch
+        fetchProducts(1);
+    }
+
+    // Input yozilganda — debounce bilan fetch (500ms)
+    function onPriceInput(){
+        const rn=document.getElementById('rangeMin'), rx=document.getElementById('rangeMax');
+        const mn=parseInt(document.getElementById('priceMin').value)||priceAbsMin;
+        const mx=parseInt(document.getElementById('priceMax').value)||priceAbsMax;
+        rn.value=Math.max(priceAbsMin,Math.min(mn,priceAbsMax));
+        rx.value=Math.max(priceAbsMin,Math.min(mx,priceAbsMax));
+        updateFill();
+        // Debounce — 700ms kutadi
+        clearTimeout(priceDebounceTimer);
+        priceDebounceTimer=setTimeout(()=>fetchProducts(1), 700);
+    }
+    function onPriceChange(){
+        // Enter bosilganda yoki field dan chiqilganda — darhol fetch
+        clearTimeout(priceDebounceTimer);
+        fetchProducts(1);
+    }
+
+    // ═══ TOGGLE / VIEW ═══
+    function toggleStock(){inStockOnly=!inStockOnly;document.getElementById('stockToggle').classList.toggle('on',inStockOnly);fetchProducts(1);}
+    function setView(v){currentView=v;document.getElementById('listViewBtn').classList.toggle('active',v==='list');document.getElementById('gridViewBtn').classList.toggle('active',v==='grid');renderProducts(currentProducts);}
+    function toggleSection(hdr){const body=hdr.nextElementSibling,ch=hdr.querySelector('.fchev');body.classList.toggle('hidden');ch.classList.toggle('open');}
+
+    // ═══ CARDS ═══
+    function getImg(p){const ai=p.image?.filter(i=>i.is_active);const fi=(ai?.length?ai:p.image)?.[0];const u=fi?.image?mediaUrl(fi.image):null;return u?`<img src="${u}" alt="${p.name}" onerror="this.outerHTML='<div class=img-ph>📦</div>'"/>`:`<div class="img-ph">📦</div>`;}
+
+    function listCard(p){
+        const liked=getLiked().has(p.id), price=getPrice(p), sub=p.subcategory_id||'';
+        const chars=p.variants?.[0]?.characteristics||{};
+        const specs=Object.entries(chars).slice(0,4).map(([k,v])=>`<div class="plc-spec"><span class="plc-sk">${k}:</span><span class="plc-sv">${v}</span></div>`).join('');
+        return `<div class="plc" onclick="location.href='product-detail.html?id=${p.id}'">
+        <div class="plc-img-wrap">${getImg(p)}</div>
+        <div class="plc-body">
+            <div class="plc-sub">${sub}</div>
+            <div class="plc-name">${p.name}</div>
+            <div class="plc-specs">${specs}</div>
+            <div class="plc-btns">
+                <button class="plc-btn" onclick="event.stopPropagation()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>Taqqoslash
+                </button>
+                <button class="plc-btn ${liked?'liked':''}" onclick="toggleLike(${p.id},this,event)">
+                    <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                    Sevimliga qo'shish
+                </button>
+            </div>
+        </div>
+        <div class="plc-right">
+            <div>
+                <div class="plc-toliv">To'lov</div>
+                <div class="plc-price">${fmt(price)}</div>
+                <div class="plc-monthly">${fmtM(price)}</div>
+            </div>
+            <button class="plc-add-btn" onclick="event.stopPropagation();openModal('cartModal')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                Savatchaga
+            </button>
+        </div>
+    </div>`;
+    }
+
+    function gridCard(p){
+        const liked=getLiked().has(p.id), price=getPrice(p), sub=p.subcategory_id||'';
+        return `<div class="pgc" onclick="location.href='product-detail.html?id=${p.id}'">
+        <div class="pgc-img">
+            ${getImg(p)}
+            <button class="pgc-like ${liked?'liked':''}" onclick="toggleLike(${p.id},this,event)">
+                <svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </button>
+        </div>
+        <div class="pgc-body">
+            <div class="pgc-sub">${sub}</div>
+            <div class="pgc-name">${p.name}</div>
+            <div class="pgc-monthly">${fmtM(price)}</div>
+            <div class="pgc-price">${fmt(price)}</div>
+            <div class="pgc-bottom">
+                <button class="pgc-cart" onclick="event.stopPropagation();openModal('cartModal')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>`;
+    }
+
+    // ═══ RENDER ═══
+    function renderProducts(products){
+        currentProducts=products;
+        const cont=document.getElementById('productsContainer');
+        if(!products.length){
+            cont.innerHTML=`<div class="empty-state"><div style="font-size:48px;margin-bottom:12px">📭</div><div style="font-size:16px;font-weight:700;margin-bottom:6px">Mahsulot topilmadi</div><div style="font-size:13px;color:var(--muted)">Filtrlarni o'zgartirib ko'ring</div></div>`;
+            document.getElementById('pagination').innerHTML='';return;
+        }
+        const total=Math.ceil(products.length/itemsPerPage), st=(currentPage-1)*itemsPerPage;
+        const page=products.slice(st,st+itemsPerPage);
+        cont.innerHTML=currentView==='list'
+            ?`<div class="products-list">${page.map(p=>listCard(p)).join('')}</div>`
+            :`<div class="products-grid">${page.map(p=>gridCard(p)).join('')}</div>`;
+        renderPagination(total);
+    }
+
+    function renderPagination(total){
+        const pag=document.getElementById('pagination');
+        if(total<=1){pag.innerHTML='';return;}
+        let h=`<button class="page-btn" onclick="goToPage(${currentPage-1},${total})" ${currentPage===1?'disabled':''}>‹</button>`;
+        let sp=Math.max(1,currentPage-2),ep=Math.min(total,currentPage+2);
+        if(sp>1){h+=`<button class="page-btn" onclick="goToPage(1,${total})">1</button>`;if(sp>2)h+=`<span style="padding:0 4px;color:var(--muted)">...</span>`;}
+        for(let i=sp;i<=ep;i++)h+=`<button class="page-btn ${i===currentPage?'active':''}" onclick="goToPage(${i},${total})">${i}</button>`;
+        if(ep<total){if(ep<total-1)h+=`<span style="padding:0 4px;color:var(--muted)">...</span>`;h+=`<button class="page-btn" onclick="goToPage(${total},${total})">${total}</button>`;}
+        h+=`<button class="page-btn" onclick="goToPage(${currentPage+1},${total})" ${currentPage===total?'disabled':''}>›</button>`;
+        pag.innerHTML=h;
+    }
+    function goToPage(p,t){if(p<1||p>t)return;currentPage=p;renderProducts(currentProducts);window.scrollTo({top:200,behavior:'smooth'});}
+
+    // ═══ FETCH ═══
+    function showSkeleton(){
+        const h=currentView==='list'?'180px':'300px';
+        document.getElementById('productsContainer').innerHTML=
+            `<div class="${currentView==='list'?'products-list':'products-grid'}">${Array(8).fill(`<div class="skeleton" style="height:${h}"></div>`).join('')}</div>`;
+    }
+
+    async function fetchProducts(page=1){
+        showSkeleton(); currentPage=page;
+
+        const params=new URLSearchParams();
+        // Backend filterlari
+        if(activeSubName) params.set('subcategory__name', activeSubName);
+        const brands=getChecked('brandList');
+        if(brands.length) params.set('brand', brands[0]);
+        if(currentSort&&currentSort!=='discount') params.set('ordering', currentSort);
+
+        try{
+            const res=await fetch(`${API}/api/v1/products/?${params.toString()}`);
+            const data=await res.json();
+            let products=Array.isArray(data)?data:(data.results||[]);
+
+            // ✅ NARX filtri — frontend (debounce bilan ishlaydi)
+            const pmn=parseFloat(document.getElementById('priceMin').value)||0;
+            const pmx=parseFloat(document.getElementById('priceMax').value)||Infinity;
+            if(pmn>priceAbsMin||pmx<priceAbsMax){
+                products=products.filter(p=>{const pr=getPrice(p);return pr>=pmn&&pr<=pmx;});
+            }
+
+            // ✅ RANG filtri — frontend
+            const selectedColors=getChecked('colorList');
+            if(selectedColors.length){
+                products=products.filter(p=>
+                    p.image?.some(img=>selectedColors.includes(String(img.color_id)))
+                );
+            }
+
+            // ✅ O'LCHAM filtri — frontend
+            const selectedSizes=getChecked('sizeList');
+            if(selectedSizes.length){
+                products=products.filter(p=>
+                    p.variants?.some(v=>selectedSizes.includes(String(v.size)))
+                );
+            }
+
+            // ✅ MAVJUDLIK filtri — frontend
+            if(inStockOnly){
+                products=products.filter(p=>p.variants?.some(v=>(v.quantity||0)>0));
+            }
+
+            renderProducts(products);
+            updateMobCount();
+        }catch(e){
+            console.error(e);
+            document.getElementById('productsContainer').innerHTML=
+                '<div class="empty-state"><div style="font-size:32px">⚠️</div><div style="margin-top:8px;color:var(--muted)">Yuklashda xatolik</div></div>';
+        }
+    }
+
+    function getChecked(listId){
+        return Array.from(document.querySelectorAll(`#${listId} input:checked`)).map(i=>i.value);
+    }
+
+    // ═══ INIT ═══
+    async function loadInitialData(){
+        try{
+            const [prodRes, colorRes, sizeRes]=await Promise.all([
+                fetch(`${API}/api/v1/products/`),
+                fetch(`${API}/api/v1/product-colors/`),    // GET /api/v1/product-colors/
+                fetch(`${API}/api/v1/product-size/`)        // GET /api/v1/product-size/
+            ]);
+
+            const prodData=await prodRes.json();
+            const all=Array.isArray(prodData)?prodData:(prodData.results||[]);
+
+            const colorData=await colorRes.json();
+            allColors=Array.isArray(colorData)?colorData:(colorData.results||[]);
+
+            const sizeData=await sizeRes.json();
+            allSizes=Array.isArray(sizeData)?sizeData:(sizeData.results||[]);
+
+            // Subkategoriyalar
+            const subCounts={};
+            all.forEach(p=>{const n=p.subcategory_id;if(n)subCounts[n]=(subCounts[n]||0)+1;});
+            allSubcategories=Object.entries(subCounts).sort((a,b)=>b[1]-a[1]);
+
+            // Brendlar
+            const bc={};
+            all.forEach(p=>{const b=p.brand;if(b&&b.length>0)bc[b]=(bc[b]||0)+1;});
+            allBrands=Object.entries(bc).sort((a,b)=>b[1]-a[1]);
+
+            // Narx range
+            const prices=all.map(p=>getPrice(p)).filter(p=>p>0);
+            if(prices.length) initRange(Math.min(...prices),Math.max(...prices));
+
+            // Breadcrumb
+            if(activeSubName){
+                document.getElementById('breadName').innerHTML=
+                    `<a href="products.html">Mahsulotlar</a> <span class="sep">›</span> ${activeSubName}`;
+            }
+
+            buildSubcategoryFilters();
+            buildBrandFilters();
+            buildColorFilters();
+            buildSizeFilters();
+            fetchProducts(1);
+        }catch(e){console.error('Init error:',e);}
+    }
+
+    // ═══ SUBKATEGORIYA ═══
+    function buildSubcategoryFilters(query=''){
+        const cont=document.getElementById('subcategoryList');
+        let filtered=allSubcategories;
+        if(query) filtered=allSubcategories.filter(([n])=>n.toLowerCase().includes(query.toLowerCase()));
+        const show=showAllSubs?filtered:filtered.slice(0,6);
+        cont.innerHTML=show.map(([name,count])=>`
+        <label class="filter-item">
+            <input type="radio" name="subcategory" value="${name}" ${activeSubName===name?'checked':''} onchange="onSubChange('${name}')"/>
+            <span class="cbox radio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="flabel">${name}</span><span class="fcount">${count}</span>
+        </label>`).join('');
+        const btn=document.getElementById('subMoreBtn');
+        if(btn){btn.style.display=filtered.length>6?'inline-flex':'none';btn.innerHTML=showAllSubs?`Yashirish <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="18 15 12 9 6 15"/></svg>`:`Ko'proq <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>`;}
+    }
+    function onSubChange(name){
+        activeSubName=name;
+        const u=new URL(location);u.searchParams.set('subcategory',name);history.pushState({},'',u);
+        document.getElementById('breadName').innerHTML=`<a href="products.html">Mahsulotlar</a> <span class="sep">›</span> ${name}`;
+        fetchProducts(1);
+    }
+    function searchSubs(q){showAllSubs=false;buildSubcategoryFilters(q.trim());}
+    function toggleMoreSubs(){showAllSubs=!showAllSubs;const si=document.querySelector('#subcategoryFilters .fsearch-wrap input');buildSubcategoryFilters((si?.value||'').trim());}
+
+    // ═══ BREND ═══
+    function buildBrandFilters(query=''){
+        const cont=document.getElementById('brandList');
+        const checked=new Set(getChecked('brandList').map(b=>b.toLowerCase()));
+        let filtered=allBrands;
+        if(query) filtered=allBrands.filter(([n])=>n.toLowerCase().includes(query.toLowerCase()));
+        const show=showAllBrands?filtered:filtered.slice(0,6);
+        cont.innerHTML=show.map(([name,count])=>`
+        <label class="filter-item">
+            <input type="checkbox" value="${name}" ${checked.has(name.toLowerCase())?'checked':''} onchange="fetchProducts(1)"/>
+            <span class="cbox"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+            <span class="flabel">${name}</span><span class="fcount">${count}</span>
+        </label>`).join('');
+        const btn=document.getElementById('brandMoreBtn');
+        if(btn){btn.style.display=filtered.length>6?'inline-flex':'none';btn.innerHTML=showAllBrands?`Yashirish <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="18 15 12 9 6 15"/></svg>`:`Ko'proq <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="6 9 12 15 18 9"/></svg>`;}
+    }
+    function searchBrands(q){showAllBrands=false;buildBrandFilters(q.trim());}
+    function toggleMoreBrands(){showAllBrands=!showAllBrands;const si=document.querySelector('#brandList').closest('.filter-section-body').querySelector('.fsearch-wrap input');buildBrandFilters((si?.value||'').trim());}
+
+    // ═══ RANG ═══
+    // allColors = [{id, name, color}, ...]  — color hex yoki css color
+    function buildColorFilters(){
+        const cont=document.getElementById('colorList');
+        if(!allColors.length){cont.innerHTML='<div style="font-size:12px;color:#bbb">Ranglar topilmadi</div>';return;}
+        cont.innerHTML=allColors.map(c=>`
+        <div class="color-swatch" id="swatch-${c.id}" title="${c.name}" onclick="toggleColor(${c.id}, this)">
+            <input type="checkbox" value="${c.id}" id="color-${c.id}"/>
+            <div class="color-swatch-inner" style="background:${c.color||'#ccc'}"></div>
+        </div>`).join('');
+    }
+
+    function toggleColor(colorId, swatchEl){
+        const inp=document.getElementById(`color-${colorId}`);
+        inp.checked=!inp.checked;
+        swatchEl.classList.toggle('selected', inp.checked);
+        fetchProducts(1);
+    }
+
+    // ═══ O'LCHAM ═══
+    // allSizes = [{id, name}, ...]
+    function buildSizeFilters(){
+        const cont=document.getElementById('sizeList');
+        if(!allSizes.length){cont.innerHTML='<div style="font-size:12px;color:#bbb">O\'lchamlar topilmadi</div>';return;}
+        cont.innerHTML=allSizes.map(s=>`
+        <label class="size-chip">
+            <input type="checkbox" value="${s.name}" onchange="fetchProducts(1)"/>
+            <span class="size-chip-label">${s.name}</span>
+        </label>`).join('');
+    }
+
+    // ═══ SORT ═══
+    function setSorting(sort,btn){
+        currentSort=sort;
+        document.querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        fetchProducts(1);
+    }
+
+    // ═══ RESET ═══
+    function resetAllFilters(){
+        activeSubName=null; inStockOnly=false; currentSort=''; showAllBrands=false; showAllSubs=false;
+        clearTimeout(priceDebounceTimer);
+        document.querySelectorAll('input[name="subcategory"]').forEach(r=>r.checked=false);
+        document.querySelectorAll('#brandList input').forEach(i=>i.checked=false);
+        // Rang tozalash
+        document.querySelectorAll('#colorList input').forEach(i=>i.checked=false);
+        document.querySelectorAll('.color-swatch').forEach(s=>s.classList.remove('selected'));
+        // O'lcham tozalash
+        document.querySelectorAll('#sizeList input').forEach(i=>i.checked=false);
+        // Narx
+        document.getElementById('stockToggle').classList.remove('on');
+        document.getElementById('rangeMin').value=priceAbsMin;
+        document.getElementById('rangeMax').value=priceAbsMax;
+        document.getElementById('priceMin').value=priceAbsMin;
+        document.getElementById('priceMax').value=priceAbsMax;
+        updateFill();
+        // Sort
+        document.querySelectorAll('.sort-tab').forEach(b=>b.classList.remove('active'));
+        document.querySelector('.sort-tab[data-sort=""]')?.classList.add('active');
+        // Search inputlar
+        document.querySelectorAll('.fsearch-wrap input').forEach(i=>i.value='');
+        buildSubcategoryFilters();
+        buildBrandFilters();
+        history.pushState({},'',location.pathname);
+        document.getElementById('breadName').textContent='Mahsulotlar';
+        fetchProducts(1);
+    }
+
+    function updateMobCount(){
+        const colors=getChecked('colorList').length;
+        const sizes=getChecked('sizeList').length;
+        const brands=getChecked('brandList').length;
+        const n=brands+colors+sizes+(activeSubName?1:0)+(inStockOnly?1:0);
+        const mb=document.getElementById('mobCount');
+        if(mb){mb.textContent=n||'';mb.style.display=n?'inline':'none';}
+    }
+
+    // ═══ MOBILE ═══
+    function toggleMobileFilter(){const ov=document.getElementById('filterOverlay'),dr=document.getElementById('filterDrawer');if(ov.classList.contains('open')){closeMobileFilter();}else{dr.innerHTML=document.getElementById('filterSidebar').innerHTML;ov.classList.add('open');}}
+    function closeMobileFilter(){document.getElementById('filterOverlay').classList.remove('open');}
+
+    // ═══ START ═══
+    loadInitialData();
+</script>
+</body>
+</html>

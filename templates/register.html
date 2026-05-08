@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Ro'yxatdan o'tish — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888;--green:#2ECC71}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1400px;margin:0 auto;padding:0 40px;width:100%}
+
+        /* REGISTER SECTION */
+        .auth-section{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+        .auth-card{background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:460px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+
+        .auth-logo{text-align:center;margin-bottom:8px}
+        .auth-logo a{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:900;text-decoration:none;letter-spacing:-.5px;line-height:1}
+        .logo-accent{color:#1a1a1a}.logo-main{color:var(--red)}
+
+        .auth-title{font-family:'Exo 2',sans-serif;font-size:26px;font-weight:800;text-align:center;margin-bottom:8px}
+        .auth-subtitle{text-align:center;color:var(--muted);font-size:14px;line-height:1.5;margin-bottom:28px}
+
+        .form-group{margin-bottom:18px}
+        .form-label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#333}
+        .form-label .verified-badge{color:#16a34a;font-size:12px;font-weight:700;margin-left:6px}
+        .form-input{width:100%;height:48px;border:1.5px solid var(--border);border-radius:10px;padding:0 16px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;background:#fafafa}
+        .form-input:focus{border-color:var(--red);background:#fff}
+        .form-input::placeholder{color:#bbb}
+        .form-input[readonly]{background:#f0fdf4;border-color:#86efac;color:#166534;font-weight:600;cursor:default}
+        .form-input.error{border-color:var(--red);background:#fff5f5}
+
+        .form-error{color:var(--red);font-size:12px;margin-top:4px;display:none}
+        .form-error.show{display:block}
+
+        .pw-confirm-note{font-size:12px;margin-top:4px}
+        .pw-match{color:#16a34a}.pw-nomatch{color:var(--red)}
+
+        .submit-btn{width:100%;height:50px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
+        .submit-btn:hover{background:var(--red-dark)}
+        .submit-btn:disabled{opacity:.6;cursor:not-allowed}
+
+        .alert-box{border-radius:10px;padding:12px 16px;font-size:13px;margin-top:16px;display:none;text-align:center}
+        .alert-box.show{display:block}
+        .alert-error{background:#ffe8e8;color:#c4001a}
+        .alert-success{background:#e8ffe8;color:#1a7a1a}
+
+        .divider{display:flex;align-items:center;gap:12px;margin:24px 0;color:var(--muted);font-size:12px}
+        .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border)}
+
+        .auth-switch{text-align:center;font-size:13px;color:var(--muted)}
+        .auth-switch a{color:var(--red);font-weight:600}
+        .auth-switch a:hover{text-decoration:underline}
+
+        .back-link{text-align:center;margin-top:14px;font-size:13px;color:var(--muted)}
+        .back-link:hover{color:#333}
+
+        .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:768px){
+            .auth-card{padding:32px 24px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar-container"></div>
+
+<!-- REGISTER FORM -->
+<section class="auth-section">
+    <div class="auth-card">
+        <div class="auth-logo">
+            <a href="index.html">
+                <span class="logo-accent">MEDIA</span><span class="logo-main">PARK</span>
+            </a>
+        </div>
+
+        <h1 class="auth-title">Hisob yaratish</h1>
+        <p class="auth-subtitle" id="regSubtitle">Hisobingizni yakunlash uchun quyidagilarni to'ldiring.</p>
+
+        <!-- Email verified badge (readonly) -->
+        <div class="form-group">
+            <label class="form-label">
+                Email <span class="verified-badge" id="emailOkBadge">✅ Tasdiqlangan</span>
+            </label>
+            <input class="form-input" type="email" id="regEmailDisplay" readonly/>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="regUsername">Foydalanuvchi nomi</label>
+            <input class="form-input" type="text" id="regUsername" placeholder="username (lotin, raqam, _ )" autocomplete="username"/>
+            <div class="form-error" id="usernameError"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="regPassword">Parol</label>
+            <input class="form-input" type="password" id="regPassword" placeholder="Kamida 9 belgi" oninput="checkPw()" autocomplete="new-password"/>
+            <div class="form-error" id="passwordError"></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="regPassword2">Parolni tasdiqlang</label>
+            <input class="form-input" type="password" id="regPassword2" placeholder="Parolni qayta kiriting" oninput="checkPw()" autocomplete="new-password"/>
+            <div class="pw-confirm-note" id="pwMatchMsg"></div>
+            <div class="form-error" id="password2Error"></div>
+        </div>
+
+        <div class="alert-box" id="alertBox"></div>
+
+        <button class="submit-btn" id="registerBtn" onclick="handleRegister()">
+            <span id="registerBtnText">Ro'yxatdan o'tish</span>
+            <span id="registerBtnSpinner" style="display:none"></span>
+        </button>
+
+        <div class="divider">yoki</div>
+        <div class="auth-switch">
+            Hisobingiz bormi? <a href="login.html">Kirish</a>
+        </div>
+        <div class="back-link">
+            <a href="index.html">← Bosh sahifaga qaytish</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<div id="footer-container"></div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    // ============================================================
+    // NAVBAR + FOOTER
+    // ============================================================
+    function loadHtml(id, path) {
+        fetch(path)
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(html => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                el.innerHTML = html;
+                el.querySelectorAll('script').forEach(old => {
+                    const s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    old.replaceWith(s);
+                });
+            })
+            .catch(() => {});
+    }
+    loadHtml('navbar-container', 'base/navbar.html');
+    loadHtml('footer-container', 'base/footer.html');
+
+    // ============================================================
+    // TOKEN CHECK
+    // ============================================================
+    function isLoggedIn(){
+        return !!localStorage.getItem('access_token');
+    }
+
+    // ============================================================
+    // ALERT & TOAST
+    // ============================================================
+    function showAlert(msg, type = 'error'){
+        const box = document.getElementById('alertBox');
+        if(!box) return;
+        box.textContent = (type === 'error' ? '❌ ' : '✅ ') + msg;
+        box.className = 'alert-box show ' + (type === 'error' ? 'alert-error' : 'alert-success');
+        setTimeout(() => box.classList.remove('show'), 5000);
+    }
+
+    function showFieldError(fieldId, msg){
+        const el = document.getElementById(fieldId + 'Error');
+        if(!el) return;
+        el.textContent = msg;
+        el.classList.add('show');
+        // Inputni qizil qilish
+        const input = document.getElementById(fieldId);
+        if(input) input.classList.add('error');
+        setTimeout(() => {
+            el.classList.remove('show');
+            if(input) input.classList.remove('error');
+        }, 4000);
+    }
+
+    function showToast(msg){
+        const toast = document.createElement('div');
+        toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#fff;padding:12px 24px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;white-space:nowrap;transition:transform .3s ease;pointer-events:none';
+        toast.textContent = msg;
+        document.body.appendChild(toast);
+        requestAnimationFrame(() => {
+            setTimeout(() => {
+                toast.style.transform = 'translateX(-50%) translateY(80px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        });
+    }
+
+    // ============================================================
+    // SET LOADING
+    // ============================================================
+    function setBtnLoading(isLoading){
+        const btn = document.getElementById('registerBtn');
+        const text = document.getElementById('registerBtnText');
+        const spinner = document.getElementById('registerBtnSpinner');
+        if(!btn || !text || !spinner) return;
+        if(isLoading){
+            btn.disabled = true;
+            text.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            spinner.innerHTML = '<span class="spinner"></span>';
+        } else {
+            btn.disabled = false;
+            text.style.display = 'inline';
+            spinner.style.display = 'none';
+        }
+    }
+
+    // ============================================================
+    // PAROL TEKSHIRISH
+    // ============================================================
+    function checkPw(){
+        const p1 = document.getElementById('regPassword')?.value;
+        const p2 = document.getElementById('regPassword2')?.value;
+        const msg = document.getElementById('pwMatchMsg');
+        if(!msg) return;
+        if(!p2){ msg.textContent = ''; msg.className = 'pw-confirm-note'; return; }
+        if(p1 === p2){
+            msg.textContent = '✓ Parollar mos keldi';
+            msg.className = 'pw-confirm-note pw-match';
+        } else {
+            msg.textContent = '✗ Parollar mos kelmadi';
+            msg.className = 'pw-confirm-note pw-nomatch';
+        }
+    }
+
+    // ============================================================
+    // REGISTRATSIYA
+    // ============================================================
+    window.handleRegister = async function(){
+        const email = sessionStorage.getItem('otp_email') || '';
+        const un    = document.getElementById('regUsername')?.value.trim();
+        const pw    = document.getElementById('regPassword')?.value;
+        const pw2   = document.getElementById('regPassword2')?.value;
+
+        // Oldingi xatoliklarni tozalash
+        document.querySelectorAll('.form-error').forEach(el => el.classList.remove('show'));
+        document.querySelectorAll('.form-input.error').forEach(el => el.classList.remove('error'));
+        const alertBox = document.getElementById('alertBox');
+        if(alertBox) alertBox.className = 'alert-box';
+
+        // --- VALIDATSIYA ---
+        if(sessionStorage.getItem('otp_verified') !== '1'){
+            showAlert('Email tasdiqlanmagan! Iltimos, oldingi sahifaga qayting.', 'error');
+            return;
+        }
+        if(!email){
+            showAlert('Email topilmadi. Iltimos, ro\'yxatdan o\'tishni boshidan boshlang.', 'error');
+            setTimeout(() => { window.location.href = 'register-start.html'; }, 2000);
+            return;
+        }
+        if(!un){
+            showFieldError('regUsername', 'Foydalanuvchi nomini kiriting');
+            return;
+        }
+        if(un.length < 3){
+            showFieldError('regUsername', 'Username kamida 3 ta belgidan iborat bo\'lishi kerak');
+            return;
+        }
+        if(!/^[a-zA-Z0-9_]+$/.test(un)){
+            showFieldError('regUsername', 'Faqat lotin harflari, raqamlar va _ belgisi ruxsat etilgan');
+            return;
+        }
+        if(!pw){
+            showFieldError('regPassword', 'Parolni kiriting');
+            return;
+        }
+        if(pw.length < 9){
+            showFieldError('regPassword', 'Parol kamida 9 ta belgi bo\'lishi kerak');
+            return;
+        }
+        if(pw !== pw2){
+            showFieldError('regPassword2', 'Parollar mos kelmadi');
+            return;
+        }
+
+        // --- YUBORISH ---
+        setBtnLoading(true);
+
+        try {
+            const res = await fetch(`${API}/api/v1/register/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: email,
+                    username: un,
+                    password: pw,
+                    password2: pw2,
+                    role: 'user'
+                })
+            });
+
+            const data = await res.json();
+
+            if(!res.ok){
+                // Backend xatoliklarini ko'rsatish
+                let errorMsg = '';
+                if(typeof data === 'object'){
+                    const errors = [];
+                    if(data.username) errors.push(...(Array.isArray(data.username) ? data.username : [data.username]));
+                    if(data.email) errors.push(...(Array.isArray(data.email) ? data.email : [data.email]));
+                    if(data.password) errors.push(...(Array.isArray(data.password) ? data.password : [data.password]));
+                    if(data.detail) errors.push(data.detail);
+                    errorMsg = errors.join(', ') || 'Xatolik yuz berdi';
+                } else {
+                    errorMsg = 'Xatolik yuz berdi';
+                }
+                showAlert(errorMsg, 'error');
+                return;
+            }
+
+            // --- MUVAFFAQIYATLI ---
+            sessionStorage.removeItem('otp_verified');
+            sessionStorage.removeItem('otp_email');
+
+            showAlert('🎉 Muvaffaqiyatli ro\'yxatdan o\'tdingiz!', 'success');
+            showToast('Ro\'yxatdan o\'tildi! Kirish sahifasiga yo\'naltirilmoqda...');
+
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1500);
+
+        } catch(e){
+            console.error('Register error:', e);
+            showAlert('Server bilan bog\'lanib bo\'lmadi. Internetingizni tekshiring.', 'error');
+        } finally {
+            setBtnLoading(false);
+        }
+    };
+
+    // ============================================================
+    // SAHIFA YUKLANGANDA
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', () => {
+        // Login qilingan bo'lsa
+        if(isLoggedIn()){
+            window.location.href = 'index.html';
+            return;
+        }
+
+        const email = sessionStorage.getItem('otp_email');
+        const verified = sessionStorage.getItem('otp_verified') === '1';
+
+        // Email yo'q bo'lsa
+        if(!email){
+            window.location.href = 'register-start.html';
+            return;
+        }
+
+        // Emailni ko'rsatish
+        const disp = document.getElementById('regEmailDisplay');
+        if(disp) disp.value = email;
+
+        // Tasdiqlanmagan bo'lsa
+        if(!verified){
+            window.location.href = 'otp.html';
+            return;
+        }
+    });
+
+    // Enter tugmasi bilan yuborish
+    document.addEventListener('keydown', function(e){
+        if(e.key === 'Enter' && e.target.tagName !== 'TEXTAREA'){
+            e.preventDefault();
+            handleRegister();
+        }
+    });
+</script>
+</body>
+</html>

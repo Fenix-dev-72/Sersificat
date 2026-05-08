@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Kirish — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh;display:flex;flex-direction:column}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1400px;margin:0 auto;padding:0 40px;width:100%}
+
+        /* LOGIN FORM */
+        .login-section{flex:1;display:flex;align-items:center;justify-content:center;padding:48px 20px}
+        .login-card{background:#fff;border-radius:20px;padding:48px 40px;width:100%;max-width:440px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+        .login-title{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:800;text-align:center;margin-bottom:8px}
+        .login-subtitle{text-align:center;color:var(--muted);font-size:14px;margin-bottom:32px}
+        .form-group{margin-bottom:20px}
+        .form-label{display:block;font-size:14px;font-weight:600;margin-bottom:6px;color:#333}
+        .form-input{width:100%;height:48px;border:1.5px solid var(--border);border-radius:10px;padding:0 16px;font-size:15px;font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;background:#fafafa}
+        .form-input:focus{border-color:var(--red);background:#fff}
+        .form-input::placeholder{color:#bbb}
+        .form-error{color:var(--red);font-size:12px;margin-top:4px;display:none}
+        .form-error.show{display:block}
+        .login-btn{width:100%;height:50px;background:var(--red);color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;transition:background .15s;font-family:'Inter',sans-serif;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:8px}
+        .login-btn:hover{background:var(--red-dark)}
+        .login-btn:disabled{opacity:.6;cursor:not-allowed}
+        .login-footer{text-align:center;margin-top:24px;font-size:13px;color:var(--muted)}
+        .login-footer a{color:var(--red);font-weight:600}
+        .login-footer a:hover{text-decoration:underline}
+        .alert{background:#fff3cd;color:#856404;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:20px;display:none}
+        .alert.show{display:block}
+        .alert-error{background:#ffe8e8;color:#c4001a}
+        .spinner{display:inline-block;width:20px;height:20px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        @media(max-width:768px){
+            .login-card{padding:32px 24px}
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div id="navbar-container"></div>
+
+<!-- LOGIN FORM -->
+<section class="login-section">
+    <div class="login-card">
+        <h1 class="login-title">Kirish</h1>
+        <p class="login-subtitle">Tizimga kirish uchun login va parolingizni kiriting</p>
+
+        <div class="alert" id="alertBox"></div>
+
+        <form id="loginForm" onsubmit="handleLogin(event)">
+            <div class="form-group">
+                <label class="form-label" for="username">Username</label>
+                <input class="form-input" type="text" id="username" placeholder="Username kiriting" required autocomplete="username"/>
+                <div class="form-error" id="usernameError"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="password">Parol</label>
+                <input class="form-input" type="password" id="password" placeholder="Parol kiriting" required autocomplete="current-password"/>
+                <div class="form-error" id="passwordError"></div>
+            </div>
+
+            <button class="login-btn" type="submit" id="loginBtn">
+                <span id="btnText">Kirish</span>
+                <span id="btnSpinner" style="display:none"></span>
+            </button>
+        </form>
+
+        <div class="login-footer">
+            Akkauntingiz yo'qmi? <a href="register.html">Ro'yxatdan o'tish</a>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<div id="footer-container"></div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    // NAVBAR va FOOTER yuklash
+    function loadHtml(id, path) {
+        fetch(path)
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(html => {
+                const el = document.getElementById(id);
+                el.innerHTML = html;
+                el.querySelectorAll('script').forEach(old => {
+                    const s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    old.replaceWith(s);
+                });
+            })
+            .catch(() => {});
+    }
+    loadHtml('navbar-container', 'base/navbar.html');
+    loadHtml('footer-container', 'base/footer.html');
+
+    // Agar allaqachon login qilingan bo'lsa, index sahifaga yo'naltirish
+    if(localStorage.getItem('access_token')){
+        location.href = 'index.html';
+    }
+
+    function showAlert(msg, type = 'error'){
+        const box = document.getElementById('alertBox');
+        box.textContent = msg;
+        box.className = 'alert show ' + (type === 'error' ? 'alert-error' : '');
+        setTimeout(() => box.classList.remove('show'), 5000);
+    }
+
+    function showFieldError(fieldId, msg){
+        const el = document.getElementById(fieldId + 'Error');
+        el.textContent = msg;
+        el.classList.add('show');
+        setTimeout(() => el.classList.remove('show'), 4000);
+    }
+
+    function setLoading(isLoading){
+        const btn = document.getElementById('loginBtn');
+        const text = document.getElementById('btnText');
+        const spinner = document.getElementById('btnSpinner');
+
+        if(isLoading){
+            btn.disabled = true;
+            text.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            spinner.innerHTML = '<span class="spinner"></span>';
+        } else {
+            btn.disabled = false;
+            text.style.display = 'inline';
+            spinner.style.display = 'none';
+        }
+    }
+
+    async function handleLogin(e){
+        e.preventDefault();
+
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+
+        if(!username){
+            showFieldError('username', 'Username kiriting');
+            return;
+        }
+        if(!password){
+            showFieldError('password', 'Parol kiriting');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const res = await fetch(`${API}/api/v1/login/`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await res.json();
+
+            if(res.ok){
+                localStorage.setItem('access_token', data.access);
+                localStorage.setItem('refresh_token', data.refresh);
+
+                // Profil ma'lumotlarini olish
+                try {
+                    const profileRes = await fetch(`${API}/api/v1/profile/`, {
+                        headers: { 'Authorization': `Bearer ${data.access}` }
+                    });
+                    if(profileRes.ok){
+                        const profile = await profileRes.json();
+                        localStorage.setItem('user', JSON.stringify(profile));
+                    }
+                } catch(e) {}
+
+                showAlert('✅ Muvaffaqiyatli kirdingiz!', 'success');
+
+                setTimeout(() => {
+                    location.href = 'index.html';
+                }, 1000);
+            } else {
+                const errorMsg = data.detail || data.username?.[0] || data.password?.[0] || 'Username yoki parol xato!';
+                showAlert('❌ ' + errorMsg, 'error');
+            }
+        } catch(e) {
+            showAlert('❌ Tarmoq xatosi. Internetingizni tekshiring.', 'error');
+            console.error('Login error:', e);
+        } finally {
+            setLoading(false);
+        }
+    }
+</script>
+</body>
+</html>

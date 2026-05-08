@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>MediaPark — Footer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
+
+        /* ===== FOOTER ===== */
+        .mp-footer {
+            width: 100%;
+            margin-top: 40px;
+        }
+
+        /* === MAIN FOOTER === */
+        .mp-footer-main {
+            background: #1e2533;
+            padding: 48px 40px;
+        }
+        .mp-footer-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 280px 1fr 1fr 1fr 1fr;
+            gap: 40px;
+            align-items: start;
+        }
+
+        /* Logo + kontakt */
+        .mp-footer-brand {}
+        .mp-footer-logo {
+            font-family: 'Exo 2', sans-serif;
+            font-size: 26px;
+            font-weight: 900;
+            color: #fff;
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        .mp-footer-logo .red { color: #E8001C; }
+        .mp-footer-help {
+            font-size: 14px;
+            color: #8b95a8;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .mp-footer-phone {
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 14px;
+            transition: color 0.15s;
+        }
+        .mp-footer-phone:hover { color: #E8001C; }
+        .mp-footer-schedule {
+            font-size: 13px;
+            color: #8b95a8;
+            line-height: 1.8;
+        }
+        .mp-footer-schedule span {
+            display: block;
+            font-weight: 600;
+            color: #aab4c4;
+        }
+
+        /* Payment methods */
+        .mp-footer-pay {}
+        .mp-footer-col-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 16px;
+        }
+        .mp-pay-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .mp-pay-card {
+            background: #2a3347;
+            border: 1px solid #3a4560;
+            border-radius: 10px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.15s, background 0.15s;
+        }
+        .mp-pay-card:hover { border-color: #E8001C; background: #2f3a52; }
+
+        /* Uzcard */
+        .mp-pay-card .uzcard {
+            font-size: 15px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .mp-pay-card .uzcard .u {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 22px; height: 22px;
+            border: 2.5px solid #7c8fa8;
+            border-radius: 50%;
+            font-size: 13px;
+            font-weight: 900;
+            color: #7c8fa8;
+            margin-right: 4px;
+        }
+
+        /* Humo */
+        .mp-pay-card .humo {
+            font-size: 18px;
+            font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+        }
+        .mp-pay-card .humo .h { color: #E8001C; }
+
+        /* Click */
+        .mp-pay-card .click-logo {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .mp-pay-card .click-logo .dot {
+            width: 10px; height: 10px;
+            background: #3b9dff;
+            border-radius: 50%;
+        }
+        .mp-pay-card .click-logo span {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        /* Payme */
+        .mp-pay-card .payme {
+            background: #00ccaa;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 14px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+
+        /* Visa */
+        .mp-pay-card .visa {
+            font-size: 22px;
+            font-weight: 900;
+            color: #fff;
+            font-style: italic;
+            letter-spacing: -1px;
+        }
+
+        /* Mastercard */
+        .mp-pay-card .mc {
+            display: flex;
+            align-items: center;
+        }
+        .mp-pay-card .mc .circle1 {
+            width: 26px; height: 26px;
+            background: #eb001b;
+            border-radius: 50%;
+        }
+        .mp-pay-card .mc .circle2 {
+            width: 26px; height: 26px;
+            background: #f79e1b;
+            border-radius: 50%;
+            margin-left: -10px;
+        }
+
+        /* Nav columns */
+        .mp-footer-nav {}
+        .mp-footer-nav a {
+            display: block;
+            font-size: 14px;
+            color: #8b95a8;
+            text-decoration: none;
+            margin-bottom: 12px;
+            transition: color 0.15s;
+        }
+        .mp-footer-nav a:hover { color: #fff; }
+
+        /* === SOCIAL BAR === */
+        .mp-footer-social {
+            background: #171d29;
+            padding: 18px 40px;
+        }
+        .mp-footer-social-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 16px;
+        }
+        .mp-social-btn {
+            width: 36px; height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: #8b95a8;
+            transition: color 0.15s, background 0.15s;
+            cursor: pointer;
+        }
+        .mp-social-btn:hover { color: #fff; background: #2a3347; }
+        .mp-social-btn svg { width: 20px; height: 20px; }
+
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .mp-footer-inner {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 32px;
+            }
+        }
+        @media (max-width: 700px) {
+            .mp-footer-inner { grid-template-columns: 1fr; }
+            .mp-footer-main { padding: 32px 20px; }
+            .mp-footer-social { padding: 14px 20px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Demo uchun bo'sh joy -->
+<div style="height: 40px; background:#f5f5f5;"></div>
+
+<footer class="mp-footer">
+    <!-- MAIN FOOTER -->
+    <div class="mp-footer-main">
+        <div class="mp-footer-inner">
+
+            <!-- 1. Brand + kontakt -->
+            <div class="mp-footer-brand">
+                <a href="/" class="mp-footer-logo">
+                    <span>MEDIA</span><span class="red">PARK</span>
+                </a>
+                <p class="mp-footer-help">Возникли вопросы? Готовы помочь:</p>
+                <a href="tel:+998712033333" class="mp-footer-phone">+998 71 203 33 33</a>
+                <div class="mp-footer-schedule">
+                    <span>График работы:</span>
+                    Ежедневно : 09:00 – 21:00
+                </div>
+            </div>
+
+            <!-- 2. To'lov usullari -->
+            <div class="mp-footer-pay">
+                <div class="mp-footer-col-title">Способы оплаты</div>
+                <div class="mp-pay-grid">
+                    <!-- Uzcard -->
+                    <div class="mp-pay-card">
+                        <div class="uzcard">
+                            <span class="u">U</span> uzcard
+                        </div>
+                    </div>
+                    <!-- Humo -->
+                    <div class="mp-pay-card">
+                        <div class="humo"><span class="h">H</span>UMO</div>
+                    </div>
+                    <!-- Click -->
+                    <div class="mp-pay-card">
+                        <div class="click-logo">
+                            <div class="dot"></div>
+                            <span>click</span>
+                        </div>
+                    </div>
+                    <!-- Payme -->
+                    <div class="mp-pay-card">
+                        <div class="payme">payme</div>
+                    </div>
+                    <!-- Visa -->
+                    <div class="mp-pay-card">
+                        <div class="visa">VISA</div>
+                    </div>
+                    <!-- Mastercard -->
+                    <div class="mp-pay-card">
+                        <div class="mc">
+                            <div class="circle1"></div>
+                            <div class="circle2"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Информация -->
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Информация</div>
+                <a href="#">О нас</a>
+                <a href="#">Гарантия</a>
+                <a href="#">Акция</a>
+                <a href="#">Наши магазины</a>
+            </div>
+
+            <!-- 4. Услуги -->
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Услуги</div>
+                <a href="#">Услуги</a>
+                <a href="#">Способы оплаты</a>
+                <a href="#">Всё о рассрочке</a>
+                <a href="#">Партнёрство</a>
+                <a href="#">Возврат товара</a>
+            </div>
+
+            <!-- 5. Для покупателей -->
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Для покупателей</div>
+                <a href="#">Доставка</a>
+                <a href="#">Связаться с нами!</a>
+                <a href="#">Сервисный центр</a>
+                <a href="#">Оставить отзыв</a>
+                <a href="#">Вакансии</a>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- SOCIAL BAR -->
+    <div class="mp-footer-social">
+        <div class="mp-footer-social-inner">
+            <!-- Telegram -->
+            <a href="#" class="mp-social-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8c-.12.57-.46.71-.93.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.53.26l.19-2.66 4.84-4.37c.21-.19-.05-.29-.33-.1L7.9 14.37l-2.54-.79c-.55-.17-.56-.55.12-.82l9.91-3.82c.46-.17.86.11.71.82l-.06-.96z"/>
+                </svg>
+            </a>
+            <!-- Twitter / X -->
+            <a href="#" class="mp-social-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+            </a>
+            <!-- Instagram -->
+            <a href="#" class="mp-social-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+            </a>
+            <!-- Facebook -->
+            <a href="#" class="mp-social-btn">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+            </a>
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>

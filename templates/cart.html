@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Savat — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;min-height:100vh}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1200px;margin:0 auto;padding:0 40px}
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .page-header{display:flex;align-items:center;justify-content:space-between;padding:28px 0 20px;flex-wrap:wrap;gap:12px}
+        .page-title{font-family:'Exo 2',sans-serif;font-size:26px;font-weight:900}
+        .select-toolbar{display:none;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:10px 16px;margin-bottom:12px;border:1.5px solid var(--border)}
+        .select-toolbar.visible{display:flex}
+        .toolbar-info{font-size:14px;font-weight:600;color:#1a1a1a;flex:1}
+        .btn-delete-selected{display:flex;align-items:center;gap:6px;background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s}
+        .btn-delete-selected:hover{background:var(--red-dark)}
+        .btn-delete-selected svg{width:16px;height:16px;stroke:#fff;fill:none}
+        .btn-select-all{background:none;border:1.5px solid var(--border);border-radius:8px;padding:7px 14px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;color:#555}
+        .btn-select-all:hover{border-color:#999;color:#1a1a1a}
+        .cart-layout{display:grid;grid-template-columns:1fr 340px;gap:24px;align-items:start;padding-bottom:60px}
+        .cart-items{display:flex;flex-direction:column;gap:10px}
+        .cart-item{background:#fff;border-radius:16px;padding:18px 20px;display:grid;grid-template-columns:20px 90px 1fr auto;gap:14px;align-items:center;transition:box-shadow .2s,border-color .15s;border:2px solid transparent}
+        .cart-item:hover{box-shadow:0 4px 20px rgba(0,0,0,.08)}
+        .cart-item.selected{border-color:var(--red);background:#fff9f9}
+        .item-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff}
+        .item-check.checked{background:var(--red);border-color:var(--red)}
+        .item-check.checked::after{content:'';width:5px;height:9px;border:2px solid #fff;border-top:none;border-left:none;transform:rotate(45deg);margin-top:-2px}
+        .item-img{width:90px;height:90px;border-radius:10px;object-fit:contain;background:#f8f8f8;padding:6px;flex-shrink:0}
+        .item-img-placeholder{width:90px;height:90px;border-radius:10px;background:#f8f8f8;display:flex;align-items:center;justify-content:center;font-size:36px;flex-shrink:0}
+        .item-info{min-width:0}
+        .item-name{font-size:14px;font-weight:600;line-height:1.4;margin-bottom:6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;cursor:pointer}
+        .item-name:hover{color:var(--red)}
+        .item-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+        .item-badge{background:#f5f5f5;border-radius:6px;padding:3px 10px;font-size:12px;color:#555;font-weight:500}
+        .item-price{font-family:'Exo 2',sans-serif;font-size:17px;font-weight:800;color:#1a1a1a}
+        .item-actions{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
+        .qty-row{display:flex;align-items:center;border:1.5px solid var(--border);border-radius:10px;overflow:hidden}
+        .qty-btn{width:34px;height:34px;border:none;background:#fff;cursor:pointer;font-size:20px;font-weight:600;color:#1a1a1a;display:flex;align-items:center;justify-content:center;transition:background .15s;flex-shrink:0;user-select:none;line-height:1}
+        .qty-btn:hover:not(:disabled){background:#f5f5f5}
+        .qty-btn:disabled{color:#ccc;cursor:not-allowed}
+        .qty-val{width:38px;height:34px;border:none;border-left:1.5px solid var(--border);border-right:1.5px solid var(--border);text-align:center;font-size:14px;font-weight:700;font-family:'Inter',sans-serif;background:#fff;outline:none;pointer-events:none}
+        .btn-delete{border:none;background:none;cursor:pointer;color:#ddd;padding:4px;transition:color .15s;display:flex;align-items:center}
+        .btn-delete:hover{color:var(--red)}
+        .btn-delete svg{width:18px;height:18px}
+        .summary-panel{background:#fff;border-radius:16px;padding:24px;position:sticky;top:16px}
+        .summary-title{font-family:'Exo 2',sans-serif;font-size:18px;font-weight:800;margin-bottom:20px}
+        .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:14px;margin-bottom:10px;color:#555}
+        .summary-row .val{font-weight:600;color:#1a1a1a}
+        .summary-divider{border:none;border-top:1.5px solid var(--border);margin:14px 0}
+        .summary-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .summary-total .lbl{font-size:15px;font-weight:600}
+        .summary-total .price{font-family:'Exo 2',sans-serif;font-size:24px;font-weight:900;color:#1a1a1a}
+        .btn-checkout{width:100%;background:var(--red);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+        .btn-checkout:hover{background:var(--red-dark)}
+        .btn-checkout:disabled{opacity:.6;cursor:not-allowed}
+        .spinner-sm{width:16px;height:16px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin .6s linear infinite}
+        .empty-cart{background:#fff;border-radius:16px;padding:60px 40px;text-align:center;grid-column:1/-1}
+        .empty-icon{font-size:64px;margin-bottom:16px}
+        .empty-title{font-family:'Exo 2',sans-serif;font-size:22px;font-weight:800;margin-bottom:8px}
+        .empty-desc{color:var(--muted);font-size:14px;margin-bottom:24px}
+        .btn-continue{display:inline-block;background:var(--red);color:#fff;border-radius:10px;padding:12px 32px;font-size:14px;font-weight:600;cursor:pointer;border:none;font-family:'Inter',sans-serif;transition:background .15s}
+        .btn-continue:hover{background:var(--red-dark)}
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:11px 22px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+        .toast.success{background:#10b981}
+        .toast.error{background:#dc2626}
+        .loading-wrap{display:flex;align-items:center;justify-content:center;padding:60px;grid-column:1/-1}
+        .spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:var(--red);border-radius:50%;animation:spin .7s linear infinite}
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9999;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#fff;border-radius:16px;padding:32px;max-width:360px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+        .modal-icon{font-size:44px;margin-bottom:12px}
+        .modal-title{font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+        .modal-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+        .modal-btns{display:flex;gap:8px}
+        .modal-btn{flex:1;background:var(--red);color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .modal-btn:hover{background:var(--red-dark)}
+        .modal-btn-gray{flex:1;background:#f0f0f0;color:#333;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .modal-btn-gray:hover{background:#e0e0e0}
+        @media(max-width:900px){.cart-layout{grid-template-columns:1fr}.summary-panel{position:static}.container{padding:0 16px}}
+        @media(max-width:600px){
+            .cart-item{grid-template-columns:20px 70px 1fr;gap:10px}
+            .item-actions{grid-column:2/-1;flex-direction:row;justify-content:space-between;align-items:center}
+            .item-img,.item-img-placeholder{width:70px;height:70px}
+        }
+    </style>
+</head>
+<body>
+<div id="navbar-container"></div>
+<main>
+    <div class="container">
+        <div class="page-header">
+            <div class="page-title">Savat 🛒</div>
+        </div>
+        <div class="select-toolbar" id="selectToolbar">
+            <div class="item-check checked" id="selectAllCheck" onclick="toggleSelectAll()" style="flex-shrink:0"></div>
+            <span class="toolbar-info" id="toolbarInfo">0 ta tanlandi</span>
+            <button class="btn-select-all" onclick="toggleSelectAll()" id="selectAllBtn">Hammasini tanlash</button>
+            <button class="btn-delete-selected" onclick="confirmDeleteSelected()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+                O'chirish
+            </button>
+        </div>
+        <div class="cart-layout" id="cartLayout">
+            <div class="loading-wrap"><div class="spinner"></div></div>
+        </div>
+    </div>
+</main>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="confirmModal">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">🗑️</div>
+        <div class="modal-title" id="confirmTitle">O'chirishni tasdiqlang</div>
+        <div class="modal-desc" id="confirmDesc">Tanlangan mahsulotlarni o'chirmoqchimisiz?</div>
+        <div class="modal-btns">
+            <button class="modal-btn-gray" onclick="closeModal()">Bekor</button>
+            <button class="modal-btn" onclick="executeDelete()">O'chirish</button>
+        </div>
+    </div>
+</div>
+<script>
+    const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:8000'
+        : 'https://mediapark.zapto.org';
+
+    function mediaUrl(path) {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        if (path.startsWith('/media/')) return API + path;
+        return API + '/media/' + path;
+    }
+
+    const fmt = n => Number(n).toLocaleString('ru-RU') + " so'm";
+
+    // ===== TOKEN =====
+    const Token = {
+        get access() { return localStorage.getItem('access_token'); },
+        get refresh() { return localStorage.getItem('refresh_token'); },
+        clear() { localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); },
+        async tryRefresh() {
+            if (!this.refresh) return false;
+            try {
+                const r = await fetch(`${API}/api/v1/token/refresh/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ refresh: this.refresh })
+                });
+                if (!r.ok) { this.clear(); return false; }
+                localStorage.setItem('access_token', (await r.json()).access);
+                return true;
+            } catch { return false; }
+        }
+    };
+
+    async function authFetch(url, opts = {}) {
+        opts.headers = opts.headers || {};
+        if (Token.access) opts.headers['Authorization'] = `Bearer ${Token.access}`;
+        let res = await fetch(url, opts);
+        if (res.status === 401 && await Token.tryRefresh()) {
+            opts.headers['Authorization'] = `Bearer ${Token.access}`;
+            res = await fetch(url, opts);
+        }
+        if (res.status === 401) { location.href = 'auth/login.html'; return null; }
+        return res;
+    }
+
+    // ===== TOAST =====
+    let toastT;
+    function showToast(msg, type = 'info') {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.className = 'toast show';
+        if (type === 'success') t.classList.add('success');
+        if (type === 'error') t.classList.add('error');
+        clearTimeout(toastT);
+        toastT = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    // ===== NAVBAR =====
+    function loadInclude(id, path) {
+        fetch(path).then(r => r.ok ? r.text() : Promise.reject()).then(html => {
+            const el = document.getElementById(id);
+            el.innerHTML = html;
+            el.querySelectorAll('script').forEach(old => {
+                const s = document.createElement('script');
+                s.textContent = old.textContent;
+                old.replaceWith(s);
+            });
+        }).catch(() => {});
+    }
+    loadInclude('navbar-container', 'base/navbar.html');
+
+    // ===== STATE =====
+    let allItems = [];
+    let selectedIds = new Set();
+    let currentOrderId = null;
+    const qtyState = {};
+
+    // ===== SAHIFADAN CHIQISHDA — kutayotgan so'rovlarni yuborish =====
+    function flushPendingQty() {
+        Object.entries(qtyState).forEach(([itemId, state]) => {
+            clearTimeout(state.timer);
+            const item = allItems.find(i => i.id === Number(itemId));
+            delete qtyState[itemId];
+            if (!item) return;
+            const finalQty = Number(item.quantity);
+            if (finalQty === state.saved) return;
+            fetch(`${API}/api/v1/update/quantity/${itemId}/`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${Token.access}`
+                },
+                body: JSON.stringify({ quantity: finalQty }),
+                keepalive: true
+            });
+        });
+    }
+    window.addEventListener('beforeunload', flushPendingQty);
+
+    // ===== MODAL =====
+    let deleteAction = null;
+    function openModal(title, desc, action) {
+        document.getElementById('confirmTitle').textContent = title;
+        document.getElementById('confirmDesc').textContent = desc;
+        deleteAction = action;
+        document.getElementById('confirmModal').classList.add('open');
+    }
+    function closeModal() { document.getElementById('confirmModal').classList.remove('open'); }
+    async function executeDelete() { closeModal(); if (deleteAction) await deleteAction(); }
+
+    // ===== LOAD — bitta so'rov, product nested keladi =====
+    async function loadCart() {
+        if (!Token.access) {
+            renderEmpty('Kirish kerak', "Savatni ko'rish uchun tizimga kiring");
+            return;
+        }
+        try {
+            const res = await authFetch(`${API}/api/v1/order-list/`);
+            if (!res) return;
+            const data = await res.json();
+            const orders = Array.isArray(data) ? data : (data.results || []);
+            const newOrder = orders.find(o => o.status === 'New');
+            currentOrderId = newOrder?.id || null;
+
+            // ✅ Backend endi OrderItemsListSerializer ishlatadi —
+            //    product to'liq nested keladi, qo'shimcha so'rov kerak emas
+            allItems = newOrder ? (newOrder.items || []) : [];
+
+            render();
+        } catch (e) {
+            console.error(e);
+            showToast('❌ Xatolik yuz berdi', 'error');
+        }
+    }
+
+    // ===== RENDER =====
+    function render() {
+        const layout = document.getElementById('cartLayout');
+        if (!allItems.length) { renderEmpty(); updateToolbar(); return; }
+        const total = allItems.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0);
+        const count = allItems.reduce((s, i) => s + Number(i.quantity), 0);
+        layout.innerHTML = `
+            <div class="cart-items">${allItems.map(renderItem).join('')}</div>
+            <div class="summary-panel">
+                <div class="summary-title">Buyurtma</div>
+                <div class="summary-row">
+                    <span id="summaryCount">Mahsulotlar (${count} dona)</span>
+                    <span class="val" id="summaryPrice">${fmt(total)}</span>
+                </div>
+                <div class="summary-row">
+                    <span>Yetkazib berish</span>
+                    <span class="val" style="color:#10b981">Bepul</span>
+                </div>
+                <hr class="summary-divider"/>
+                <div class="summary-total">
+                    <span class="lbl">Jami</span>
+                    <span class="price" id="summaryTotal">${fmt(total)}</span>
+                </div>
+                <button class="btn-checkout" id="checkoutBtn" onclick="checkout()">Buyurtma berish</button>
+            </div>`;
+        updateToolbar();
+    }
+
+    function renderItem(item) {
+        // Backend endi product ni to'liq object sifatida qaytaradi
+        const p = item.product;
+        const imgs = p?.image || p?.product_images || [];
+        const activeImg = imgs.find(i => i.is_active) || imgs[0];
+        const imgUrl = activeImg ? mediaUrl(activeImg.image) : null;
+        const name = p?.name || 'Mahsulot';
+        const pid = p?.id || '';
+        const qty = Number(item.quantity);
+        const subtotal = Number(item.price) * qty;
+        const isSelected = selectedIds.has(item.id);
+
+        return `<div class="cart-item${isSelected ? ' selected' : ''}" id="item-${item.id}">
+            <div class="item-check${isSelected ? ' checked' : ''}" onclick="toggleSelect(${item.id})"></div>
+            ${imgUrl
+            ? `<img class="item-img" src="${imgUrl}" alt="${name}" onerror="this.outerHTML='<div class=item-img-placeholder>📦</div>'">`
+            : `<div class="item-img-placeholder">📦</div>`}
+            <div class="item-info">
+                <div class="item-name" onclick="location.href='product-detail.html?id=${pid}'">${name}</div>
+                <div class="item-meta">
+                    ${item.product_size ? `<span class="item-badge">📐 ${item.product_size}</span>` : ''}
+                    ${item.product_color ? `<span class="item-badge">🎨 ${item.product_color}</span>` : ''}
+                </div>
+                <div class="item-price" id="price-${item.id}">${fmt(subtotal)}</div>
+            </div>
+            <div class="item-actions">
+                <div class="qty-row">
+                    <button class="qty-btn" id="minus-${item.id}" onclick="changeQty(${item.id},-1)" ${qty <= 1 ? 'disabled' : ''}>−</button>
+                    <span class="qty-val" id="qty-${item.id}">${qty}</span>
+                    <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+                </div>
+                <button class="btn-delete" onclick="confirmDeleteOne(${item.id},'${name.replace(/'/g, "\\'")}')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                        <polyline points="3 6 5 6 21 6"/>
+                        <path d="M19 6l-1 14H6L5 6"/>
+                        <path d="M10 11v6"/>
+                        <path d="M14 11v6"/>
+                        <path d="M9 6V4h6v2"/>
+                    </svg>
+                </button>
+            </div>
+        </div>`;
+    }
+
+    function renderEmpty(title = "Savat bo'sh", desc = "Hali hech narsa qo'shilmagan") {
+        document.getElementById('cartLayout').innerHTML = `
+            <div class="empty-cart">
+                <div class="empty-icon">🛒</div>
+                <div class="empty-title">${title}</div>
+                <div class="empty-desc">${desc}</div>
+                <button class="btn-continue" onclick="location.href='index.html'">Xarid qilishni boshlash</button>
+            </div>`;
+    }
+
+    function updateSummary() {
+        const total = allItems.reduce((s, i) => s + Number(i.price) * Number(i.quantity), 0);
+        const count = allItems.reduce((s, i) => s + Number(i.quantity), 0);
+        const sc = document.getElementById('summaryCount');
+        const sp = document.getElementById('summaryPrice');
+        const st = document.getElementById('summaryTotal');
+        if (sc) sc.textContent = `Mahsulotlar (${count} dona)`;
+        if (sp) sp.textContent = fmt(total);
+        if (st) st.textContent = fmt(total);
+    }
+
+    // ===== QUANTITY — 2s debounce =====
+    function changeQty(itemId, delta) {
+        const item = allItems.find(i => i.id === itemId);
+        if (!item) return;
+        const newQty = Number(item.quantity) + delta;
+        if (newQty < 1) return;
+
+        if (!qtyState[itemId]) {
+            qtyState[itemId] = { saved: Number(item.quantity), timer: null };
+        }
+
+        item.quantity = newQty;
+
+        const qtyEl = document.getElementById(`qty-${itemId}`);
+        const minusEl = document.getElementById(`minus-${itemId}`);
+        const priceEl = document.getElementById(`price-${itemId}`);
+        if (qtyEl) qtyEl.textContent = newQty;
+        if (minusEl) minusEl.disabled = newQty <= 1;
+        if (priceEl) priceEl.textContent = fmt(Number(item.price) * newQty);
+        updateSummary();
+
+        clearTimeout(qtyState[itemId].timer);
+        qtyState[itemId].timer = setTimeout(async () => {
+            const savedQty = qtyState[itemId].saved;
+            const finalQty = Number(item.quantity);
+            delete qtyState[itemId];
+
+            try {
+                const res = await authFetch(`${API}/api/v1/update/quantity/${itemId}/`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quantity: finalQty })
+                });
+                if (!res || !res.ok) {
+                    item.quantity = savedQty;
+                    const qEl = document.getElementById(`qty-${itemId}`);
+                    const mEl = document.getElementById(`minus-${itemId}`);
+                    const pEl = document.getElementById(`price-${itemId}`);
+                    if (qEl) qEl.textContent = savedQty;
+                    if (mEl) mEl.disabled = savedQty <= 1;
+                    if (pEl) pEl.textContent = fmt(Number(item.price) * savedQty);
+                    updateSummary();
+                    showToast('❌ Yangilanmadi', 'error');
+                }
+            } catch {
+                item.quantity = savedQty;
+                const qEl = document.getElementById(`qty-${itemId}`);
+                if (qEl) qEl.textContent = savedQty;
+                updateSummary();
+                showToast('❌ Internet aloqasini tekshiring', 'error');
+            }
+        }, 2000);
+    }
+
+    // ===== SELECTION =====
+    function toggleSelect(itemId) {
+        if (selectedIds.has(itemId)) selectedIds.delete(itemId);
+        else selectedIds.add(itemId);
+        const el = document.getElementById(`item-${itemId}`);
+        if (el) {
+            const isSel = selectedIds.has(itemId);
+            el.classList.toggle('selected', isSel);
+            el.querySelector('.item-check').classList.toggle('checked', isSel);
+        }
+        updateToolbar();
+    }
+
+    function toggleSelectAll() {
+        const allSelected = selectedIds.size === allItems.length;
+        if (allSelected) selectedIds.clear();
+        else allItems.forEach(i => selectedIds.add(i.id));
+        render();
+    }
+
+    function updateToolbar() {
+        const toolbar = document.getElementById('selectToolbar');
+        const info = document.getElementById('toolbarInfo');
+        const allCheck = document.getElementById('selectAllCheck');
+        const selectAllBtn = document.getElementById('selectAllBtn');
+        if (!allItems.length) { toolbar.classList.remove('visible'); return; }
+        toolbar.classList.add('visible');
+        const n = selectedIds.size;
+        info.textContent = n > 0 ? `${n} ta tanlandi` : 'Hech narsa tanlanmagan';
+        const allSel = n === allItems.length && n > 0;
+        allCheck.classList.toggle('checked', allSel);
+        selectAllBtn.textContent = allSel ? 'Hammasini bekor qilish' : 'Hammasini tanlash';
+    }
+
+    // ===== DELETE =====
+    function confirmDeleteOne(itemId, name) {
+        openModal(
+            "O'chirishni tasdiqlang",
+            `"${name}" mahsulotini savatdan o'chirmoqchimisiz?`,
+            () => deleteItems([itemId], false)
+        );
+    }
+
+    function confirmDeleteSelected() {
+        if (!selectedIds.size) { showToast("❗ Hech narsa tanlanmagan"); return; }
+        const isAll = selectedIds.size === allItems.length;
+        if (isAll) {
+            openModal(
+                "Buyurtmani o'chirish",
+                "Barcha mahsulotlar tanlandi. Butun buyurtma o'chiriladi!",
+                () => deleteOrder()
+            );
+        } else {
+            openModal(
+                `${selectedIds.size} ta mahsulotni o'chirish`,
+                "Tanlangan mahsulotlar savatdan o'chiriladi.",
+                () => deleteItems([...selectedIds], true)
+            );
+        }
+    }
+
+    async function deleteItems(ids, isMultiple) {
+        const prev = [...allItems];
+        const prevSel = new Set(selectedIds);
+        allItems = allItems.filter(i => !ids.includes(i.id));
+        ids.forEach(id => selectedIds.delete(id));
+        render();
+        try {
+            await Promise.all(ids.map(id =>
+                authFetch(`${API}/api/v1/delete/Item/${id}/`, { method: 'DELETE' })
+            ));
+            showToast(isMultiple ? `🗑️ ${ids.length} ta mahsulot o'chirildi` : "🗑️ Mahsulot o'chirildi", 'success');
+        } catch {
+            allItems = prev;
+            selectedIds = prevSel;
+            render();
+            showToast("❌ O'chirishda xatolik", 'error');
+        }
+    }
+
+    async function deleteOrder() {
+        if (!currentOrderId) return;
+        const prev = [...allItems];
+        allItems = [];
+        selectedIds.clear();
+        render();
+        try {
+            const res = await authFetch(`${API}/api/v1/order/delete/${currentOrderId}/`, { method: 'DELETE' });
+            if (!res || !res.ok) {
+                allItems = prev;
+                render();
+                showToast("❌ O'chirishda xatolik", 'error');
+            } else {
+                currentOrderId = null;
+                showToast("🗑️ Buyurtma o'chirildi", 'success');
+            }
+        } catch {
+            allItems = prev;
+            render();
+            showToast("❌ Internet aloqasini tekshiring", 'error');
+        }
+    }
+
+    // ===== CHECKOUT =====
+    async function checkout() {
+        if (!currentOrderId) { showToast("❌ Buyurtma topilmadi", 'error'); return; }
+        flushPendingQty();
+        const btn = document.getElementById('checkoutBtn');
+        if (btn) { btn.disabled = true; btn.innerHTML = '<div class="spinner-sm"></div> Yuborilmoqda...'; }
+        try {
+            // const res = await authFetch(`${API}/api/v1/order/checkout/${currentOrderId}/`, { method: 'POST' });
+            await new Promise(r => setTimeout(r, 1000));
+            showToast('✅ Buyurtma muvaffaqiyatli yuborildi!', 'success');
+            // location.href = 'checkout.html';
+        } catch {
+            showToast("❌ Xatolik yuz berdi", 'error');
+        } finally {
+            if (btn) { btn.disabled = false; btn.innerHTML = 'Buyurtma berish'; }
+        }
+    }
+
+    loadCart();
+</script>
+</body>
+</html>

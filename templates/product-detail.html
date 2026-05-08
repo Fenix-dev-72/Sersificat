@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mahsulot — MediaPark</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'Inter',sans-serif;background:#f5f5f5;color:#1a1a1a;display:flex;flex-direction:column;min-height:100vh}
+        :root{--red:#E8001C;--red-dark:#c4001a;--border:#e0e0e0;--muted:#888}
+        a{text-decoration:none;color:inherit}
+        .container{max-width:1400px;margin:0 auto;padding:0 40px}
+
+        .skeleton{background:linear-gradient(90deg,#f0f0f0 25%,#e8e8e8 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.5s infinite;border-radius:12px}
+        @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+        .breadcrumb{padding:14px 0;display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);flex-wrap:wrap}
+        .breadcrumb a{color:var(--muted)}.breadcrumb a:hover{color:#333;text-decoration:underline}
+        .breadcrumb span.sep{color:#ccc}
+
+        /* DETAIL LAYOUT */
+        .detail-layout{display:grid;grid-template-columns:72px 1fr 1fr 320px;gap:24px;padding-bottom:40px;align-items:start}
+
+        .thumb-list{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+        .thumb{width:66px;height:66px;border-radius:10px;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;transition:border-color .15s;flex-shrink:0}
+        .thumb img{width:100%;height:100%;object-fit:contain;padding:4px}
+        .thumb.active{border-color:var(--red)}
+        .thumb-nav-btn{width:66px;height:32px;border:1.5px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#888;transition:all .15s}
+        .thumb-nav-btn:hover{border-color:#999;color:#333}
+
+        .main-img-wrap{background:#fff;border-radius:16px;display:flex;align-items:center;justify-content:center;min-height:460px;padding:32px;position:relative;overflow:hidden}
+        .main-img-wrap img{max-width:100%;max-height:420px;object-fit:contain}
+        .main-img-placeholder{font-size:100px;opacity:.3}
+        .img-badge{position:absolute;top:14px;left:14px;display:flex;gap:6px}
+        .badge-green{background:#1aaa55;color:#fff;border-radius:6px;padding:3px 9px;font-size:12px;font-weight:700}
+
+        .info-col{}
+        .product-title{font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;line-height:1.35;margin-bottom:16px}
+
+        .info-short-label{font-size:14px;font-weight:600;color:#1a1a1a;margin-bottom:12px}
+        .info-short{background:#fff;border-radius:14px;padding:18px;margin-bottom:16px}
+        .info-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid #f0f0f0;font-size:14px;gap:12px}
+        .info-row:last-child{border-bottom:none}
+        .info-row .lbl{color:#888;flex-shrink:0;min-width:160px}
+        .info-row .val{font-weight:600;text-align:right;color:#1a1a1a}
+        .all-chars-btn{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:500;color:#1a1a1a;background:none;border:none;cursor:pointer;padding:10px 0;margin-top:2px;border-top:1px solid #f0f0f0;width:100%}
+        .all-chars-btn svg{width:16px;height:16px;margin-left:auto}
+
+        .colors-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+        .color-circle{width:36px;height:36px;border-radius:50%;border:3px solid #e0e0e0;cursor:pointer;transition:all .15s;box-shadow:inset 0 1px 2px rgba(0,0,0,.1)}
+        .color-circle:hover{transform:scale(1.12);border-color:#999}
+        .color-circle.active{border-color:var(--red);box-shadow:0 0 0 3px rgba(232,0,28,.25)}
+
+        .variants-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+        .variant-btn{border:1.5px solid var(--border);border-radius:6px;padding:7px 18px;font-size:14px;font-weight:500;cursor:pointer;background:#fff;transition:all .15s;white-space:nowrap;color:#1a1a1a}
+        .variant-btn:hover{border-color:#999}
+        .variant-btn.active{border-color:var(--red);color:var(--red)}
+
+        .action-top-row{display:flex;align-items:center;gap:16px;margin-bottom:12px;font-size:13px;color:#555}
+        .action-top-btn{display:flex;align-items:center;gap:5px;cursor:pointer;border:none;background:none;font-size:13px;color:#555;font-family:'Inter',sans-serif}
+        .action-top-btn svg{width:16px;height:16px;stroke:#555;fill:none}
+
+        /* PRICE PANEL */
+        .price-panel{background:#fff;border-radius:16px;padding:20px;height:fit-content;position:sticky;top:70px}
+        .old-price{color:var(--muted);text-decoration:line-through;font-size:14px;display:flex;align-items:center;gap:8px;margin-bottom:4px}
+        .discount-badge{background:#FFF3A0;color:#7a6000;border-radius:6px;padding:2px 7px;font-size:12px;font-weight:700}
+        .main-price{font-family:'Exo 2',sans-serif;font-size:28px;font-weight:900;color:#1a1a1a;margin-bottom:4px}
+        .code-row{font-size:12px;color:var(--muted);margin-bottom:16px}
+
+        .installment-box{border:1.5px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:border-color .15s}
+        .installment-box:hover{border-color:#999}
+        .inst-price{font-size:15px;font-weight:700;margin-bottom:2px}
+        .inst-label{font-size:12px;color:var(--muted)}
+        .inst-arr svg{width:18px;height:18px;stroke:#888;fill:none}
+
+        .payment-logos{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+        .pay-click{font-weight:800;font-size:13px;color:#0f7aff}
+        .pay-payme{font-weight:700;font-size:13px;color:#1ec76b}
+        .pay-octo{font-weight:700;font-size:13px;color:#e85d04}
+        .pay-sep{color:#ddd;font-size:14px}
+
+        .cart-count-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13px;color:#555;background:#fff9f0;border-radius:8px;padding:8px 10px}
+        .cart-count-row svg{width:18px;height:18px;stroke:#f97316;fill:none;flex-shrink:0}
+
+        .stock-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:13.5px}
+        .stock-icon svg{width:18px;height:18px;stroke:#1aaa55;fill:none}
+        .stock-link{color:#1a1a1a;font-size:12px;margin-left:auto;cursor:pointer;text-decoration:underline;text-decoration-color:#ccc}
+
+        .delivery-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:18px;font-size:13px;line-height:1.5}
+        .delivery-row svg{width:18px;height:18px;stroke:#555;fill:none;flex-shrink:0;margin-top:1px}
+        .delivery-link{color:var(--red);font-weight:600}
+
+        .btn-cart{width:100%;background:var(--red);color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .15s;font-family:'Inter',sans-serif}
+        .btn-cart:hover{background:var(--red-dark)}.btn-cart svg{width:20px;height:20px;stroke:#fff;fill:none}
+        .btn-cart:disabled{opacity:0.7;cursor:not-allowed}
+
+        .btn-installment{width:100%;background:#fff;color:#1a1a1a;border:1.5px solid var(--border);border-radius:10px;padding:13px;font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;font-family:'Inter',sans-serif;transition:border-color .15s}
+        .btn-installment:hover{border-color:#999}
+        .btn-like{width:40px;height:40px;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:absolute;top:14px;right:14px}
+        .btn-like:hover{border-color:var(--red)}.btn-like.liked svg{stroke:var(--red);fill:var(--red)}
+        .btn-like svg{width:20px;height:20px;stroke:#ccc;fill:none;transition:all .2s}
+
+        /* TABS */
+        .tabs-section{background:#fff;border-radius:16px;overflow:hidden;margin-bottom:28px}
+        .tabs-nav{display:flex;border-bottom:1.5px solid var(--border);overflow-x:auto}
+        .tab-btn{padding:14px 24px;font-size:14px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1.5px;transition:color .15s;white-space:nowrap;font-family:'Inter',sans-serif}
+        .tab-btn.active{color:#1a1a1a;border-bottom-color:#1a1a1a;font-weight:600}
+        .tab-panel{display:none;padding:28px 32px}.tab-panel.active{display:block}
+
+        /* CHARACTERISTICS - 2 column grid like mediapark.uz */
+        .chars-title{font-size:20px;font-weight:700;margin-bottom:20px}
+        .chars-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 48px}
+        .char-row{display:flex;align-items:baseline;padding:12px 0;border-bottom:1px solid #f0f0f0;gap:6px}
+        .char-row:last-child{border-bottom:none}
+        .char-name{color:#888;font-size:14px;white-space:nowrap;flex-shrink:0}
+        .char-dots{flex:1;border-bottom:1px dotted #d0d0d0;margin:0 4px;min-width:10px;height:1px;align-self:center}
+        .char-value{font-size:14px;font-weight:600;color:#1a1a1a;text-align:right;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+        .description-text{font-size:14.5px;line-height:1.8;color:#333}.description-text p{margin-bottom:12px}
+        .no-comments{color:var(--muted);font-size:14px;text-align:center;padding:30px}
+        .comments-list{display:flex;flex-direction:column;gap:14px}
+        .comment-card{border:1.5px solid var(--border);border-radius:12px;padding:14px 16px}
+        .comment-user{font-weight:700;font-size:14px;margin-bottom:4px}
+        .comment-text{font-size:13.5px;color:#444;line-height:1.6}
+
+        /* RELATED PRODUCTS */
+        .section-title{font-size:22px;font-weight:700;margin-bottom:20px}
+        .products-row{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:40px}
+        .product-card{background:#fff;border-radius:14px;padding:14px;cursor:pointer;position:relative;transition:box-shadow .2s}
+        .product-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.1)}
+        .product-card-img{width:100%;aspect-ratio:1;object-fit:contain;display:block;margin-bottom:10px}
+        .product-card-badge{position:absolute;top:10px;left:10px;background:#1aaa55;color:#fff;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700}
+        .product-card-badge.online{background:#1a73e8}
+        .product-card-name{font-size:13px;line-height:1.4;margin-bottom:8px;color:#1a1a1a;min-height:36px}
+        .product-card-installment{border:1px solid var(--border);border-radius:6px;padding:4px 8px;font-size:11px;color:#555;margin-bottom:8px;display:inline-block}
+        .product-card-bottom{display:flex;align-items:center;justify-content:space-between}
+        .product-card-price{font-size:16px;font-weight:700;color:#1a1a1a}
+        .product-card-buy{width:34px;height:34px;border-radius:8px;background:var(--red);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .product-card-buy svg{width:18px;height:18px;stroke:#fff;fill:none}
+
+        /* MODALS */
+        .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9999;align-items:center;justify-content:center}
+        .modal-overlay.open{display:flex}
+        .modal-box{background:#fff;border-radius:16px;padding:36px;max-width:340px;width:90%;text-align:center;box-shadow:0 16px 48px rgba(0,0,0,.18)}
+        .modal-icon{font-size:48px;margin-bottom:12px}.modal-title{font-family:'Exo 2',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px}
+        .modal-desc{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:20px}
+        .modal-btn{background:var(--red);color:#fff;border:none;border-radius:10px;padding:11px 28px;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif}
+        .modal-btn:hover{background:var(--red-dark)}.modal-btns{display:flex;gap:8px}.modal-btns .modal-btn{flex:1}
+        .modal-btn-gray{flex:1;background:#f0f0f0;color:#333;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:600;cursor:pointer}
+
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#1a1a1a;color:#fff;padding:11px 22px;border-radius:10px;font-size:14px;font-weight:500;z-index:99999;transition:transform .3s;pointer-events:none;white-space:nowrap}
+        .toast.show{transform:translateX(-50%) translateY(0)}
+        .toast.success{background:#10b981}
+        .toast.error{background:#dc2626}
+
+        @keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+        .loading-spinner{width:18px;height:18px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.6s linear infinite}
+
+        @media(max-width:1100px){.detail-layout{grid-template-columns:64px 1fr 1fr}.price-panel{position:static;grid-column:1/-1}.products-row{grid-template-columns:repeat(3,1fr)}.chars-grid{grid-template-columns:1fr}}
+        @media(max-width:768px){.detail-layout{grid-template-columns:1fr}.thumb-list{flex-direction:row;overflow-x:auto}.main-img-wrap{min-height:300px}.container{padding:0 14px}.products-row{grid-template-columns:repeat(2,1fr)}}
+    </style>
+</head>
+<body>
+
+<div id="navbar-container"></div>
+
+<main style="flex:1">
+    <div class="container">
+        <nav class="breadcrumb" id="breadcrumb">
+            <a href="index.html">Bosh sahifa</a>
+            <span class="sep">›</span>
+            <a href="#">Katalog</a>
+            <span class="sep">›</span>
+            <a href="#">Smartfonlar, telefonlar, planshetlar</a>
+            <span class="sep">›</span>
+            <a href="#">Smartfonlar brend bo'yicha</a>
+            <span class="sep">›</span>
+            <span id="breadName">Yuklanmoqda...</span>
+        </nav>
+
+        <div class="detail-layout" id="detailLayout">
+            <div class="thumb-list" id="thumbList">
+                <div class="skeleton" style="height:66px;width:66px;border-radius:10px"></div>
+                <div class="skeleton" style="height:66px;width:66px;border-radius:10px"></div>
+                <div class="skeleton" style="height:66px;width:66px;border-radius:10px"></div>
+            </div>
+            <div class="main-img-wrap" id="mainImgWrap"><div class="main-img-placeholder">📦</div></div>
+            <div class="info-col" id="infoCol">
+                <div class="skeleton" style="height:28px;margin-bottom:12px;border-radius:8px"></div>
+                <div class="skeleton" style="height:160px;border-radius:14px"></div>
+            </div>
+            <div class="price-panel" id="pricePanel" style="position:relative">
+                <div class="skeleton" style="height:200px;border-radius:12px"></div>
+            </div>
+        </div>
+
+        <!-- TABS -->
+        <div class="tabs-section" id="tabsSection" style="display:none">
+            <div class="tabs-nav">
+                <button class="tab-btn" onclick="switchTab('tavsif',this)">Описание</button>
+                <button class="tab-btn active" onclick="switchTab('xususiyat',this)">Характеристики</button>
+                <button class="tab-btn" onclick="switchTab('magazin',this)">Наличие в магазинах</button>
+                <button class="tab-btn" onclick="switchTab('sharhlar',this)">Отзывы</button>
+            </div>
+            <div class="tab-panel" id="tab-tavsif"></div>
+            <div class="tab-panel active" id="tab-xususiyat"></div>
+            <div class="tab-panel" id="tab-magazin"><div class="no-comments">🏪 Do'kon ma'lumotlari yuklanmoqda...</div></div>
+            <div class="tab-panel" id="tab-sharhlar"></div>
+        </div>
+
+        <!-- "S etim tovaram pokupayut" -->
+        <div id="relatedBuySection" style="display:none">
+            <div class="section-title">С этим товаром покупают</div>
+            <div class="products-row" id="relatedBuyRow"></div>
+        </div>
+
+        <!-- "Похожие товары" -->
+        <div id="similarSection" style="display:none">
+            <div class="section-title">Похожие товары</div>
+            <div class="products-row" id="similarRow"></div>
+        </div>
+
+        <div style="padding-bottom:48px"></div>
+    </div>
+</main>
+
+<div id="footer-container"></div>
+
+<div class="modal-overlay" id="cartModal" onclick="closeModal('cartModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">🛒</div>
+        <div class="modal-title">Savatga qo'shildi!</div>
+        <div class="modal-desc" id="cartModalDesc">Mahsulot muvaffaqiyatli savatga qo'shildi</div>
+        <div class="modal-btns">
+            <button class="modal-btn-gray" onclick="closeModal('cartModal')">Davom etish</button>
+            <button class="modal-btn" onclick="location.href='cart.html'">Savatga o'tish</button>
+        </div>
+    </div>
+</div>
+<div class="modal-overlay" id="loginModal" onclick="closeModal('loginModal')">
+    <div class="modal-box" onclick="event.stopPropagation()">
+        <div class="modal-icon">❤️</div>
+        <div class="modal-title">Kirish kerak</div>
+        <div class="modal-desc">Sevimlilar va savat uchun tizimga kiring</div>
+        <div class="modal-btns">
+            <button class="modal-btn-gray" onclick="closeModal('loginModal')">Bekor</button>
+            <button class="modal-btn" onclick="location.href='auth/login.html'">Kirish</button>
+        </div>
+    </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+    const API = (location.hostname==='localhost'||location.hostname==='127.0.0.1') ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    function mediaUrl(path){ if(!path) return null; if(path.startsWith('http')) return path; if(path.startsWith('/media/')) return API+path; return API+'/media/'+path; }
+
+    const productId = new URLSearchParams(location.search).get('id');
+    const fmt = n => Number(n).toLocaleString('ru-RU') + " so'm";
+    const fmtM = n => Math.round(n/12).toLocaleString('ru-RU') + " so'm/oy";
+    function getVariantPrice(v){ return Number(v?.price ?? 0); }
+
+    // Load navbar and footer from base files
+    function loadInclude(id, path){
+        fetch(path)
+            .then(r => r.ok ? r.text() : Promise.reject())
+            .then(html => {
+                const el = document.getElementById(id);
+                el.innerHTML = html;
+                el.querySelectorAll('script').forEach(old => {
+                    const s = document.createElement('script');
+                    s.textContent = old.textContent;
+                    old.replaceWith(s);
+                });
+            })
+            .catch(() => {});
+    }
+    loadInclude('navbar-container', 'base/navbar.html');
+    loadInclude('footer-container', 'base/footer.html');
+
+    const Token = {
+        get access(){ return localStorage.getItem('access_token'); },
+        get refresh(){ return localStorage.getItem('refresh_token'); },
+        clear(){ localStorage.removeItem('access_token'); localStorage.removeItem('refresh_token'); },
+        async tryRefresh(){
+            if(!this.refresh) return false;
+            try{
+                const r = await fetch(`${API}/api/v1/token/refresh/`, {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({refresh:this.refresh})});
+                if(!r.ok){this.clear(); return false;}
+                localStorage.setItem('access_token', (await r.json()).access);
+                return true;
+            }catch{ return false; }
+        }
+    };
+
+    async function authFetch(url, opts={}){
+        opts.headers = opts.headers || {};
+        if(Token.access) opts.headers['Authorization'] = `Bearer ${Token.access}`;
+        let res = await fetch(url, opts);
+        if(res.status===401 && await Token.tryRefresh()){
+            opts.headers['Authorization'] = `Bearer ${Token.access}`;
+            res = await fetch(url, opts);
+        }
+        if(res.status===401){ openModal('loginModal'); return null; }
+        return res;
+    }
+
+    function openModal(id){ document.getElementById(id).classList.add('open'); }
+    function closeModal(id){ document.getElementById(id).classList.remove('open'); }
+
+    let toastT;
+    function showToast(msg, type='info'){
+        const t=document.getElementById('toast');
+        t.textContent=msg;
+        t.classList.add('show');
+        t.classList.remove('success', 'error');
+        if(type==='success') t.classList.add('success');
+        if(type==='error') t.classList.add('error');
+        clearTimeout(toastT);
+        toastT=setTimeout(()=>t.classList.remove('show'),3000);
+    }
+
+    function switchTab(name, btn){
+        document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-'+name).classList.add('active');
+        if(name==='xususiyat') renderActiveVariantCharacteristics();
+    }
+
+    function getLiked(){ try{return new Set(JSON.parse(localStorage.getItem('liked_ids')||'[]'));}catch{return new Set();} }
+    function setLiked(s){ localStorage.setItem('liked_ids', JSON.stringify([...s])); }
+
+    async function toggleLike(pid, btn){
+        if(!Token.access){ openModal('loginModal'); return; }
+        const liked = getLiked(), was = liked.has(pid);
+        if(was){liked.delete(pid); btn.classList.remove('liked');}
+        else{liked.add(pid); btn.classList.add('liked');}
+        setLiked(liked);
+        showToast(was ? '💔 Sevimlilardan olib tashlandi' : "❤️ Sevimlilarga qo'shildi");
+        try{
+            const res = await authFetch(`${API}/api/v1/procduct/like/${pid}`, {method:'POST'});
+            if(!res||!res.ok){
+                if(was){liked.add(pid); btn.classList.add('liked');}
+                else{liked.delete(pid); btn.classList.remove('liked');}
+                setLiked(liked);
+            }
+        }catch{}
+    }
+
+    // ==================== SAVATGA QO'SHISH FUNKSIYASI ====================
+    async function addToCart() {
+        if (!product) {
+            showToast('❌ Mahsulot ma\'lumotlari topilmadi', 'error');
+            return;
+        }
+
+        if (!Token.access) {
+            openModal('loginModal');
+            return;
+        }
+
+        const variant = activeVariant;
+        if (!variant) {
+            showToast('❌ Iltimos, mahsulot variantini tanlang', 'error');
+            return;
+        }
+
+        let price = variant.price;
+        if (typeof price === 'string') {
+            price = parseFloat(price);
+        }
+
+        if (!price || price <= 0) {
+            showToast('❌ Narx ma\'lumoti xato', 'error');
+            return;
+        }
+
+        let product_color = '';
+        if (activeColor && colorsMap[activeColor]) {
+            product_color = colorsMap[activeColor].name;
+        }
+
+        let product_size = '';
+        if (variant.size) {
+            if (typeof variant.size === 'object' && variant.size.name) {
+                product_size = variant.size.name;
+            } else if (typeof variant.size === 'string') {
+                product_size = variant.size;
+            }
+        }
+
+        // product_size majburiy field — agar variant size bo'lmasa, id ishlatamiz
+        if (!product_size) {
+            product_size = String(variant.id || '');
+        }
+
+        const quantity = 1;
+
+        const orderData = {
+            product: parseInt(product.id),
+            price: price,
+            quantity: quantity,
+            product_size: product_size || '',
+            product_color: product_color || ''
+        };
+
+        const btn = document.querySelector('.btn-cart');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<div class="loading-spinner"></div> Yuklanmoqda...`;
+        btn.disabled = true;
+
+        try {
+            const response = await authFetch(`${API}/api/v1/order-create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(orderData)
+            });
+
+            if (!response) return;
+
+            const result = await response.json();
+
+            if (response.ok) {
+                showToast(`✅ Savatga qo'shildi!`, 'success');
+                const modalDesc = document.getElementById('cartModalDesc');
+                if (modalDesc) {
+                    modalDesc.innerHTML = `"${product.name}" muvaffaqiyatli savatga qo'shildi`;
+                }
+                openModal('cartModal');
+            } else {
+                console.error("400 xato:", JSON.stringify(result));
+                const errorMsg = JSON.stringify(result);
+                showToast(`❌ ${errorMsg}`, 'error');
+            }
+
+        } catch (error) {
+            console.error('Add to cart error:', error);
+            showToast('❌ Internet aloqasini tekshiring', 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        }
+    }
+    // ==================== SAVATGA QO'SHISH FUNKSIYASI TUGADI ====================
+
+    let product=null, activeColor=null, activeColorName=null, activeVariant=null, thumbOffset=0, colorsMap={};
+
+    async function loadProduct(){
+        if(!productId){ document.getElementById('breadName').textContent='Topilmadi'; return; }
+        try{
+            await loadColorsMap();
+            const res = await fetch(`${API}/api/v1/product/detail/${productId}/`);
+            if(!res.ok) throw new Error('not found');
+            product = await res.json();
+            renderProduct();
+            loadRelatedProducts();
+        }catch(e){
+            document.getElementById('breadName').textContent = 'Mahsulot topilmadi';
+            document.getElementById('detailLayout').innerHTML = '<p style="padding:40px;color:#888;grid-column:1/-1">Mahsulot yuklanmadi</p>';
+        }
+    }
+
+    async function loadColorsMap(){
+        try{
+            const res = await fetch(`${API}/api/v1/product-colors/`);
+            const data = await res.json();
+            (Array.isArray(data) ? data : (data.results||[])).forEach(c => { colorsMap[c.id] = {name:c.name, color:c.color}; });
+        }catch{}
+    }
+
+    async function loadRelatedProducts(){
+        if(!product) return;
+
+        try{
+            const nameBase = product.name.split(' ').slice(0,3).join(' ');
+            const res = await fetch(`${API}/api/v1/products/?search=${encodeURIComponent(nameBase)}&limit=10`);
+            if(res.ok){
+                const data = await res.json();
+                const items = (Array.isArray(data) ? data : (data.results||[])).filter(p => String(p.id) !== String(productId));
+                if(items.length){
+                    renderProductCards(items.slice(0,5), 'similarRow');
+                    document.getElementById('similarSection').style.display = '';
+                }
+            }
+        }catch(e){}
+
+        try{
+            const cat = product.category?.id || product.category;
+            if(!cat) return;
+            const res2 = await fetch(`${API}/api/v1/products/?category=${cat}&limit=10`);
+            if(res2.ok){
+                const data2 = await res2.json();
+                const items2 = (Array.isArray(data2) ? data2 : (data2.results||[])).filter(p => String(p.id) !== String(productId));
+                if(items2.length){
+                    renderProductCards(items2.slice(0,5), 'relatedBuyRow');
+                    document.getElementById('relatedBuySection').style.display = '';
+                }
+            }
+        }catch(e){}
+    }
+
+    function renderProductCards(items, containerId){
+        const el = document.getElementById(containerId);
+        el.innerHTML = items.map(p => {
+            const firstImg = p.image?.find(i=>i.is_active) || p.image?.[0];
+            const imgUrl = firstImg ? mediaUrl(firstImg.image) : null;
+            const firstVariant = p.variants?.[0];
+            const price = Number(firstVariant?.price || 0);
+            const monthly = price > 0 ? Math.round(price/12).toLocaleString('ru-RU') : null;
+            return `<div class="product-card" onclick="location.href='product.html?id=${p.id}'">
+                <span class="product-card-badge">IMEI ✅</span>
+                ${imgUrl ? `<img class="product-card-img" src="${imgUrl}" alt="${p.name}" onerror="this.style.display='none'">` : '<div style="width:100%;aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>'}
+                <div class="product-card-name">${p.name}</div>
+                ${monthly ? `<div class="product-card-installment">от ${monthly} so'm/oy</div>` : ''}
+                <div class="product-card-bottom">
+                    <div class="product-card-price">${price > 0 ? price.toLocaleString('ru-RU') + " so'm" : '—'}</div>
+                    <button class="product-card-buy" onclick="event.stopPropagation();openModal('cartModal')">
+                        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                    </button>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function renderProduct(){
+        const p = product;
+        document.title = p.name + ' — MediaPark';
+        document.getElementById('breadName').textContent = p.name;
+        activeVariant = p.variants?.[0] ?? null;
+        const imgs = p.image?.filter(i=>i.is_active) ?? [];
+        const first = imgs[0] || p.image?.[0];
+        activeColor = first?.color_id ?? null;
+        if(activeColor && colorsMap[activeColor]) activeColorName = colorsMap[activeColor].name;
+        renderThumbs();
+        renderMainImage();
+        renderInfo();
+        renderPricePanel();
+        renderTabs();
+        document.getElementById('tabsSection').style.display = '';
+    }
+
+    function getFilteredImages(){
+        if(!product?.image?.length) return [];
+        let f = product.image;
+        if(activeColor) f = f.filter(i=>i.color_id===activeColor);
+        const a = f.filter(i=>i.is_active);
+        return a.length ? a : f;
+    }
+
+    function renderThumbs(){
+        const el = document.getElementById('thumbList'), imgs = getFilteredImages(), SHOW = 5;
+        el.innerHTML = '';
+        if(!imgs.length){ el.innerHTML = '<div style="padding:20px;color:#888">Rasm yo\'q</div>'; return; }
+        if(imgs.length > SHOW){
+            const u = document.createElement('button'); u.className = 'thumb-nav-btn';
+            u.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>';
+            u.onclick = () => { thumbOffset = Math.max(0, thumbOffset-1); renderThumbs(); };
+            el.appendChild(u);
+        }
+        imgs.slice(thumbOffset, Math.min(thumbOffset+SHOW, imgs.length)).forEach((img, i) => {
+            const d = document.createElement('div');
+            d.className = 'thumb' + ((i===0 && thumbOffset===0) ? ' active' : '');
+            const url = mediaUrl(img.image);
+            d.innerHTML = url ? `<img src="${url}" alt="" onerror="this.parentElement.innerHTML='📷'"/>` : '📷';
+            d.onclick = () => { document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active')); d.classList.add('active'); setMainImage(url); };
+            el.appendChild(d);
+        });
+        if(imgs.length > SHOW){
+            const d = document.createElement('button'); d.className = 'thumb-nav-btn';
+            d.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>';
+            d.onclick = () => { thumbOffset = Math.min(imgs.length-SHOW, thumbOffset+1); renderThumbs(); };
+            el.appendChild(d);
+        }
+    }
+
+    function setMainImage(url){
+        document.getElementById('mainImgWrap').innerHTML = url
+            ? `<div class="img-badge"><span class="badge-green">IMEI ✅</span></div><img src="${url}" alt="" style="max-width:100%;max-height:420px;object-fit:contain" onerror="this.outerHTML='<div class=main-img-placeholder>📦</div>'"/>`
+            : `<div class="img-badge"><span class="badge-green">IMEI ✅</span></div><div class="main-img-placeholder">📦</div>`;
+    }
+
+    function renderMainImage(){
+        const imgs = getFilteredImages();
+        setMainImage(imgs[0] ? mediaUrl(imgs[0].image) : null);
+    }
+
+    function renderInfo(){
+        const p = product, el = document.getElementById('infoCol');
+        let chars = {};
+        try{ const cs = activeVariant?.characteristics||'{}'; chars = typeof cs==='string' ? JSON.parse(cs) : cs; }catch{}
+        const charEntries = Object.entries(chars).slice(0, 7);
+
+        const colorIds = [...new Set(p.image?.map(i=>i.color_id).filter(Boolean) ?? [])];
+        const colorHtml = colorIds.length ? `
+            <div class="colors-row" id="colorRow">
+              ${colorIds.map(cid => {
+            const cd = colorsMap[cid];
+            return `<div class="color-circle ${cid===activeColor?'active':''}" style="background-color:${cd?.color||'#ccc'}" data-color-id="${cid}" title="${cd?.name||''}" onclick="selectColor(${cid},this)"></div>`;
+        }).join('')}
+            </div>` : '';
+
+        const hasVariants = p.variants?.some(v => v?.size?.name || v?.size);
+        const variantHtml = hasVariants ? `
+            <div class="variants-row" id="variantRow">
+              ${p.variants.map((v,i) => {
+            const sizeName = v?.size?.name || v?.size || null;
+            if(!sizeName) return '';
+            return `<button class="variant-btn ${i===0?'active':''}" data-idx="${i}" onclick="selectVariant(${i},this)">${sizeName}</button>`;
+        }).join('')}
+            </div>` : '';
+
+        el.innerHTML = `
+            <div class="action-top-row">
+                <button class="action-top-btn">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                    Сравнить
+                </button>
+                <button class="action-top-btn">
+                    <svg viewBox="0 0 24 24" stroke-width="1.5"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+                    Отправить
+                </button>
+            </div>
+            <h1 class="product-title">${p.name}</h1>
+            ${colorHtml}
+            ${variantHtml}
+            <div>
+                <div class="info-short-label">Коротко о товаре</div>
+                <div class="info-short" id="infoShort">
+                  ${charEntries.length > 0
+            ? charEntries.map(([k,v]) => `<div class="info-row"><span class="lbl">${k}:</span><span class="val">${v}</span></div>`).join('')
+            : '<div class="info-row"><span class="lbl">Xususiyatlar mavjud emas</span></div>'}
+                  ${Object.keys(chars).length > 0
+            ? `<button class="all-chars-btn" onclick="goToChars()">Все характеристики <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>`
+            : ''}
+                </div>
+            </div>`;
+    }
+
+    function goToChars(){
+        const btn = document.querySelector('.tabs-nav .tab-btn:nth-child(2)');
+        if(btn) switchTab('xususiyat', btn);
+        document.getElementById('tabsSection').scrollIntoView({behavior:'smooth', block:'start'});
+    }
+
+    function updateInfoShort(){
+        let chars = {};
+        try{ const cs = activeVariant?.characteristics||'{}'; chars = typeof cs==='string' ? JSON.parse(cs) : cs; }catch{}
+        const ce = Object.entries(chars).slice(0, 7);
+        const el = document.getElementById('infoShort');
+        if(el) el.innerHTML = `
+            ${ce.length > 0
+            ? ce.map(([k,v]) => `<div class="info-row"><span class="lbl">${k}:</span><span class="val">${v}</span></div>`).join('')
+            : '<div class="info-row"><span class="lbl">Xususiyatlar mavjud emas</span></div>'}
+            ${Object.keys(chars).length > 0
+            ? `<button class="all-chars-btn" onclick="goToChars()">Все характеристики <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></button>`
+            : ''}`;
+    }
+
+    function selectColor(colorId, el){
+        activeColor = colorId;
+        if(colorsMap[colorId]) activeColorName = colorsMap[colorId].name;
+        document.querySelectorAll('.color-circle').forEach(c=>c.classList.remove('active'));
+        if(el) el.classList.add('active');
+        thumbOffset = 0;
+        const imgs = getFilteredImages();
+        if(imgs?.length) setMainImage(mediaUrl(imgs[0].image));
+        renderThumbs();
+    }
+
+    function selectVariant(idx, btn){
+        activeVariant = product.variants[idx];
+        document.querySelectorAll('.variant-btn').forEach(b=>b.classList.remove('active'));
+        if(btn) btn.classList.add('active');
+        renderPricePanelNumbers();
+        updateInfoShort();
+        renderActiveVariantCharacteristics();
+    }
+
+    function renderActiveVariantCharacteristics(){
+        const xEl = document.getElementById('tab-xususiyat');
+        if(!activeVariant){ xEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Variant tanlanmagan</p>'; return; }
+        let chars = {};
+        try{ const cs = activeVariant.characteristics||'{}'; chars = typeof cs==='string' ? JSON.parse(cs) : cs; }catch{}
+        const entries = Object.entries(chars);
+        if(!entries.length){ xEl.innerHTML = '<p style="color:var(--muted);text-align:center;padding:20px">Xususiyatlar kiritilmagan</p>'; return; }
+
+        xEl.innerHTML = `
+            <div class="chars-title">Характеристики</div>
+            <div class="chars-grid">
+                ${entries.map(([k,v]) => `
+                    <div class="char-row">
+                        <span class="char-name">${k}</span>
+                        <span class="char-dots"></span>
+                        <span class="char-value" title="${v}">${v}</span>
+                    </div>`).join('')}
+            </div>`;
+    }
+
+    function renderPricePanel(){
+        const liked = getLiked().has(Number(productId)), price = getVariantPrice(activeVariant);
+        document.getElementById('pricePanel').innerHTML = `
+            <button class="btn-like ${liked?'liked':''}" onclick="toggleLike(${productId},this)">
+                <svg viewBox="0 0 24 24" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+            </button>
+            <div class="old-price" id="panelOldPrice">
+                <span>${fmt(Math.round(price*1.04))}</span>
+                <span class="discount-badge">-4%</span>
+            </div>
+            <div class="main-price" id="panelPrice">${fmt(price)}</div>
+            <div class="code-row">Код: ${productId||'—'}</div>
+            <div class="installment-box" onclick="openModal('cartModal')">
+                <div>
+                    <div class="inst-price" id="panelMonthly">от ${fmtM(price)} × 12 мес.</div>
+                    <div class="inst-label">В рассрочку</div>
+                </div>
+                <div class="inst-arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg></div>
+            </div>
+            <div class="payment-logos">
+                <span class="pay-click">● click</span>
+                <span class="pay-sep">|</span>
+                <span class="pay-payme">payme</span>
+                <span class="pay-sep">|</span>
+                <span class="pay-octo">octobank</span>
+            </div>
+            <div class="cart-count-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                <span>Товар в 58 корзинах сейчас</span>
+            </div>
+            <div class="stock-row">
+                <div class="stock-icon"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></div>
+                <span>В наличии <strong id="panelQty">${activeVariant?.quantity||0}</strong></span>
+                <span class="stock-link" onclick="switchTab('magazin', document.querySelector('.tabs-nav .tab-btn:nth-child(3)'))">› В наличии в магазинах</span>
+            </div>
+            <div class="delivery-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span><span class="delivery-link">Доставим за 90 минут</span> после оформления заказа (г.Ташкент)</span>
+            </div>
+            <button class="btn-cart" onclick="addToCart()">
+                <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                В корзину
+            </button>
+            <button class="btn-installment" onclick="openModal('cartModal')">Купить в рассрочку</button>`;
+    }
+
+    function renderPricePanelNumbers(){
+        const price = getVariantPrice(activeVariant);
+        const o = document.querySelector('#panelOldPrice span');
+        const m = document.getElementById('panelPrice');
+        const n = document.getElementById('panelMonthly');
+        const q = document.getElementById('panelQty');
+        if(o) o.textContent = fmt(Math.round(price*1.04));
+        if(m) m.textContent = fmt(price);
+        if(n) n.textContent = 'от ' + Math.round(price/12).toLocaleString('ru-RU') + " so'm × 12 мес.";
+        if(q) q.textContent = activeVariant?.quantity || 0;
+    }
+
+    function renderTabs(){
+        const p = product;
+        document.getElementById('tab-tavsif').innerHTML = p.description
+            ? `<div class="description-text">${p.description.split('\n').map(l=>`<p>${l}</p>`).join('')}</div>`
+            : '<p style="color:var(--muted);text-align:center;padding:20px">Tavsif kiritilmagan</p>';
+        renderActiveVariantCharacteristics();
+        document.getElementById('tab-sharhlar').innerHTML = p.comments?.length
+            ? `<div class="comments-list">${p.comments.map(c=>`<div class="comment-card"><div class="comment-user">👤 ${c.user||'Foydalanuvchi'}</div><div class="comment-text">${c.comment}</div></div>`).join('')}</div>`
+            : '<div class="no-comments">💬 Hozircha sharhlar yo\'q</div>';
+
+        // Magazin tab - do'konlar ma'lumoti
+        if(p.stores && p.stores.length) {
+            document.getElementById('tab-magazin').innerHTML = `
+                <div class="comments-list">
+                    ${p.stores.map(s => `
+                        <div class="comment-card">
+                            <div class="comment-user">🏪 ${s.name || 'Do\'kon'}</div>
+                            <div class="comment-text">📍 ${s.address || 'Manzil mavjud emas'}<br>📞 ${s.phone || 'Telefon mavjud emas'}</div>
+                        </div>
+                    `).join('')}
+                </div>`;
+        } else {
+            document.getElementById('tab-magazin').innerHTML = '<div class="no-comments">🏪 Do\'kon ma\'lumotlari topilmadi</div>';
+        }
+    }
+
+    loadProduct();
+</script>
+</body>
+</html>
