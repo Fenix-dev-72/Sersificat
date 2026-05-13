@@ -10,48 +10,72 @@
         :root { --red: #E8001C; --red-dark: #c4001a; --border: #e0e0e0; --text: #1a1a1a; --green: #2ECC71; }
         body { font-family: 'Inter', sans-serif; background: #f5f5f5; }
 
-        .mp-navbar { background: #fff; box-shadow: 0 2px 10px rgba(0,0,0,0.08); position: sticky; top: 0; z-index: 1000; width: 100%; }
-
+        /* ===== NAVBAR ===== */
+        .mp-navbar {
+            background: #fff;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            position: sticky; top: 0; z-index: 1000; width: 100%;
+        }
         .mp-top {
-            display: flex; align-items: center; gap: 8px; padding: 10px 16px;
-            border-bottom: 1px solid var(--border); max-width: 1400px; margin: 0 auto;
-            position: relative; flex-wrap: wrap;
+            display: flex; align-items: center; gap: 8px;
+            padding: 10px 16px; border-bottom: 1px solid var(--border);
+            max-width: 1400px; margin: 0 auto; position: relative;
         }
 
+        /* LOGO */
         .mp-logo {
             font-family: 'Exo 2', sans-serif; font-size: 24px; font-weight: 900;
-            text-decoration: none; flex-shrink: 0; letter-spacing: -0.5px; line-height: 1;
-            color: var(--text);
+            text-decoration: none; flex-shrink: 0; letter-spacing: -0.5px;
+            line-height: 1; color: var(--text);
         }
         .mp-logo .r { color: var(--red); }
 
-        /* KATALOG TUGMASI */
+        /* KATALOG TUGMASI — desktop/planshet */
         .mp-catalog-btn {
-            display: flex; align-items: center; gap: 6px; background: var(--red);
-            color: #fff; border: none; border-radius: 10px; padding: 10px 16px;
-            font-size: 13px; font-weight: 600; cursor: pointer; flex-shrink: 0;
-            transition: background .15s; white-space: nowrap; z-index: 501; position: relative;
+            display: flex; align-items: center; gap: 6px;
+            background: var(--red); color: #fff; border: none;
+            border-radius: 10px; padding: 10px 16px;
+            font-size: 13px; font-weight: 600; cursor: pointer;
+            flex-shrink: 0; transition: background .15s; white-space: nowrap;
         }
         .mp-catalog-btn:hover { background: var(--red-dark); }
         .mp-catalog-btn svg { width: 16px; height: 16px; }
 
+        /* MENU TUGMASI — faqat telefonda CHAPDA */
+        .mp-menu-btn {
+            display: none; align-items: center; justify-content: center;
+            width: 42px; height: 42px; border-radius: 14px;
+            border: 1.5px solid var(--border); background: #fff;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .mp-menu-btn svg { width: 20px; height: 20px; stroke: #444; }
+
         /* QIDIRUV */
         .mp-search-wrap {
-            flex: 1; min-width: 150px; position: relative; display: flex; align-items: center;
+            flex: 1; min-width: 150px; position: relative;
+            display: flex; align-items: center;
         }
         .mp-search-input {
-            width: 100%; height: 40px; border: 1.5px solid var(--border); border-right: none;
-            border-radius: 10px 0 0 10px; padding: 0 14px; font-size: 14px;
-            background: #f8f8f8; outline: none; transition: border .15s; z-index: 2; position: relative;
+            width: 100%; height: 42px; border: 1.5px solid var(--border);
+            border-right: none; border-radius: 14px 0 0 14px;
+            padding: 0 14px; font-size: 14px; background: #f8f8f8;
+            outline: none; transition: border .15s; position: relative; z-index: 2;
         }
         .mp-search-input:focus { border-color: var(--red); background: #fff; }
         .mp-search-input::placeholder { color: transparent; }
         .mp-search-input:focus::placeholder { color: #bbb; }
 
+        /* Telefonda: search to'liq yumaloq (search-btn yo'q) */
+        .mp-search-input.mobile-full {
+            border-right: 1.5px solid var(--border);
+            border-radius: 10px;
+        }
+
         .mp-search-animated {
             position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
             font-size: 14px; color: #bbb; z-index: 1; pointer-events: none;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: calc(100% - 50px);
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            max-width: calc(100% - 50px);
         }
         .mp-search-input:focus ~ .mp-search-animated,
         .mp-search-input:not(:placeholder-shown) ~ .mp-search-animated { display: none; }
@@ -60,151 +84,275 @@
         .mp-animated-word:nth-child(1) { animation-delay: 0s; }
         .mp-animated-word:nth-child(2) { animation-delay: 3s; }
         .mp-animated-word:nth-child(3) { animation-delay: 6s; }
-        @keyframes slideUp { 0%,100%{opacity:0;transform:translateY(10px)} 5%,25%{opacity:1;transform:translateY(0)} 30%,100%{opacity:0;transform:translateY(-10px)} }
+        @keyframes slideUp {
+            0%,100%{opacity:0;transform:translateY(10px)}
+            5%,25%{opacity:1;transform:translateY(0)}
+            30%,100%{opacity:0;transform:translateY(-10px)}
+        }
 
         .mp-search-btn {
-            height: 40px; width: 42px; background: var(--red); border: none;
-            border-radius: 0 10px 10px 0; cursor: pointer; display: flex;
+            height: 42px; width: 44px; background: var(--red); border: none;
+            border-radius: 0 14px 14px 0; cursor: pointer; display: flex;
             align-items: center; justify-content: center; flex-shrink: 0;
             transition: background .15s; z-index: 2;
         }
+        .mp-search-btn:hover { background: var(--red-dark); }
         .mp-search-btn svg { color: #fff; width: 18px; height: 18px; }
 
-        .mp-search-drop { /* ... as before ... */ display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: #fff; border: 1.5px solid var(--border); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.10); z-index: 200; max-height: 300px; overflow-y: auto; }
-        .mp-search-drop.open { display: block; }
-
-        /* 3 NUQTA (faqat telefonda) */
-        .mp-lang-btn {
-            display: none; align-items: center; justify-content: center;
-            width: 40px; height: 40px; border-radius: 10px; border: 1.5px solid var(--border);
-            background: #fff; cursor: pointer; flex-shrink: 0; margin-left: 4px;
+        .mp-search-drop {
+            display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0;
+            background: #fff; border: 1.5px solid var(--border); border-radius: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,.10); z-index: 200; max-height: 300px; overflow-y: auto;
         }
-        .mp-lang-btn svg { width: 20px; height: 20px; stroke: #555; }
+        .mp-search-drop.open { display: block; }
+        .mp-search-msg { padding: 12px 16px; font-size: 13px; color: #888; }
+        .mp-search-item {
+            display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+            text-decoration: none; color: var(--text); border-bottom: 1px solid #f5f5f5;
+            transition: background .1s;
+        }
+        .mp-search-item:hover { background: #fff5f5; }
+        .mp-search-item img { width: 36px; height: 36px; object-fit: contain; border-radius: 6px; }
+        .mp-search-ph { width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; font-size: 20px; background: #f5f5f5; border-radius: 6px; }
+        .mp-search-name { flex: 1; font-size: 13px; font-weight: 500; }
+        .mp-search-price { font-size: 12px; color: var(--red); font-weight: 600; white-space: nowrap; }
+
+        /* MENU TUGMASI — faqat telefonda (chapdan chiqadigan drawer) */
+        .mp-menu-btn {
+            display: none; align-items: center; justify-content: center;
+            width: 40px; height: 40px; border-radius: 10px;
+            border: 1.5px solid var(--border); background: #fff;
+            cursor: pointer; flex-shrink: 0;
+        }
+        .mp-menu-btn svg { width: 20px; height: 20px; stroke: #444; }
+
+        /* ===== CHAPDAN CHIQADIGAN DRAWER (telefon menu) ===== */
+        .mp-side-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45); z-index: 3000;
+        }
+        .mp-side-overlay.open { display: block; }
+
+        .mp-side-drawer {
+            position: fixed; top: 0; left: -300px; width: 280px; height: 100%;
+            background: #fff; z-index: 3001;
+            transition: left 0.28s cubic-bezier(.4,0,.2,1);
+            display: flex; flex-direction: column; overflow: hidden;
+        }
+        .mp-side-drawer.open { left: 0; }
+
+        .mp-side-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+        }
+        .mp-side-head-logo {
+            font-family: 'Exo 2', sans-serif; font-size: 20px; font-weight: 900;
+            color: var(--text); text-decoration: none; letter-spacing: -0.5px;
+        }
+        .mp-side-head-logo .r { color: var(--red); }
+        .mp-side-close {
+            background: #f5f5f5; border: none; cursor: pointer;
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center; color: #555;
+        }
+        .mp-side-close:hover { background: #ffe5e5; color: var(--red); }
+        .mp-side-close svg { width: 16px; height: 16px; }
+
+        .mp-side-body { flex: 1; overflow-y: auto; padding: 8px 0; }
+
+        .mp-side-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 13px 20px; font-size: 14px; font-weight: 500;
+            color: var(--text); text-decoration: none; cursor: pointer;
+            transition: background .1s; border: none; background: none; width: 100%;
+            text-align: left;
+        }
+        .mp-side-item:hover { background: #fff5f5; color: var(--red); }
+        .mp-side-item svg { width: 20px; height: 20px; flex-shrink: 0; stroke: #888; }
+        .mp-side-item:hover svg { stroke: var(--red); }
+
+        .mp-side-divider {
+            height: 1px; background: var(--border); margin: 6px 0;
+        }
+
+        .mp-side-footer { padding: 16px 20px; border-top: 1px solid var(--border); flex-shrink: 0; }
+        .mp-side-footer-label { font-size: 11px; color: #aaa; margin-bottom: 8px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+        .mp-side-lang-btns { display: flex; gap: 8px; }
+        .mp-side-lang-btn {
+            flex: 1; padding: 8px; border-radius: 8px; border: 1.5px solid var(--border);
+            background: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: all .12s; color: var(--text);
+        }
+        .mp-side-lang-btn.active { background: var(--red); border-color: var(--red); color: #fff; }
+        .mp-side-lang-btn:not(.active):hover { border-color: var(--red); color: var(--red); }
 
         /* ACTION tugmalar (desktop) */
-        .mp-actions {
-            display: flex; align-items: center; gap: 2px; flex-shrink: 0;
-        }
+        .mp-actions { display: flex; align-items: center; gap: 2px; flex-shrink: 0; }
         .mp-action {
             display: flex; flex-direction: column; align-items: center; gap: 2px;
             background: none; border: none; cursor: pointer; padding: 4px 6px;
-            border-radius: 6px; color: var(--text); min-width: auto;
-            text-decoration: none; transition: background .12s; font-size: inherit;
+            border-radius: 6px; color: var(--text); text-decoration: none;
+            transition: background .12s; font-size: inherit; min-width: auto;
         }
         .mp-action:hover { background: #fff5f5; color: var(--red); }
         .mp-action svg { width: 20px; height: 20px; }
         .mp-action span { font-size: 9px; font-weight: 500; white-space: nowrap; }
 
-        /* KATEGORIYA PILSLAR */
+        /* ===== KATEGORIYA PILLS — barcha ekranda ko'rinadi ===== */
         .mp-cats {
             display: flex; align-items: center; gap: 6px; padding: 8px 16px;
-            overflow-x: auto; scrollbar-width: none; max-width: 1400px; margin: 0 auto;
-            border-bottom: 1px solid #f0f0f0;
+            overflow-x: auto; scrollbar-width: none;
+            max-width: 1400px; margin: 0 auto;
         }
         .mp-cats::-webkit-scrollbar { display: none; }
         .mp-cat-pill {
             display: flex; align-items: center; gap: 4px; padding: 6px 14px;
-            border-radius: 999px; border: 1.5px solid var(--border); background: #fff;
-            font-size: 12px; font-weight: 500; color: var(--text); cursor: pointer;
-            white-space: nowrap; transition: all .12s; flex-shrink: 0;
+            border-radius: 999px; border: 1.5px solid var(--border);
+            background: #fff; font-size: 12px; font-weight: 500;
+            color: var(--text); cursor: pointer; white-space: nowrap;
+            transition: all .12s; flex-shrink: 0;
         }
         .mp-cat-pill:hover { border-color: var(--red); color: var(--red); }
         .mp-cat-pill.active { background: var(--green); border-color: var(--green); color: #fff; }
 
-        /* MEGA MENU (desktop/planshet) */
-        .mp-catalog-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 499; }
-        .mp-catalog-overlay.open { display: block; }
+        /* ===== KATALOG MODAL (oyna) ===== */
+        .mp-catalog-modal-bg {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.55); z-index: 2000;
+            align-items: flex-start; justify-content: center;
+            padding: 70px 16px 16px;
+        }
+        .mp-catalog-modal-bg.open { display: flex; }
 
-        .mp-catalog-mega {
-            display: none; position: absolute; top: 100%; left: 0; width: 100%;
-            max-height: 420px; background: #fff; border-radius: 0 0 12px 12px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.15); z-index: 500; overflow: hidden;
-            flex-direction: column;
+        .mp-catalog-modal {
+            background: #fff; border-radius: 16px;
+            width: 100%; max-width: 760px;
+            max-height: calc(100vh - 100px);
+            overflow: hidden; display: flex; flex-direction: column;
+            box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+            animation: modalIn .2s ease;
         }
-        .mp-catalog-mega.open { display: flex; }
-
-        .mp-mega-left {
-            width: 100%; flex-shrink: 0; background: #f9f9f9;
-            border-bottom: 1px solid #eee; overflow-y: auto; max-height: 150px;
-            display: flex; flex-direction: row; padding: 4px;
-        }
-        .mp-mega-catalog-item {
-            display: flex; align-items: center; gap: 6px; padding: 8px 12px;
-            font-size: 12px; font-weight: 500; color: #333; cursor: pointer;
-            white-space: nowrap; border-bottom: 3px solid transparent;
-            flex-shrink: 0; transition: all .15s;
-        }
-        .mp-mega-catalog-item.active, .mp-mega-catalog-item:hover {
-            background: #fff; color: var(--red); border-bottom-color: var(--red); font-weight: 600;
+        @keyframes modalIn {
+            from { opacity:0; transform: translateY(-16px) scale(0.97); }
+            to   { opacity:1; transform: translateY(0) scale(1); }
         }
 
-        .mp-mega-right {
-            flex: 1; padding: 14px; overflow-y: auto; max-height: 300px;
-            display: flex; flex-direction: column; gap: 14px;
+        .mp-catalog-modal-head {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 14px 18px; border-bottom: 1px solid var(--border); flex-shrink: 0;
         }
-        .mp-mega-category-title {
-            font-size: 14px; font-weight: 700; color: #1a1a1a;
-            padding-bottom: 4px; border-bottom: 2px solid var(--red); display: inline-block;
-            cursor: pointer;
+        .mp-catalog-modal-head h2 {
+            font-family: 'Exo 2', sans-serif; font-size: 16px; font-weight: 800;
+            color: var(--text); letter-spacing: -0.3px;
         }
-        .mp-mega-subcategory-list { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-        .mp-mega-subcategory-item {
-            font-size: 12px; color: #555; cursor: pointer; padding: 4px 10px;
-            border-radius: 4px; background: #f8f8f8; text-decoration: none; white-space: nowrap;
+        .mp-catalog-modal-close {
+            background: #f5f5f5; border: none; cursor: pointer;
+            width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            color: #555; transition: background .12s;
         }
-        .mp-mega-subcategory-item:hover { background: #fff5f5; color: var(--red); }
+        .mp-catalog-modal-close:hover { background: #ffe5e5; color: var(--red); }
+        .mp-catalog-modal-close svg { width: 16px; height: 16px; }
 
-        /* TIL DRAWER */
-        .mp-lang-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 2000; }
-        .mp-lang-overlay.open { display: block; }
-        .mp-lang-drawer {
-            position: fixed; top: 0; right: -280px; width: 260px; height: 100%;
-            background: #fff; box-shadow: -4px 0 20px rgba(0,0,0,0.2);
-            z-index: 2001; transition: right 0.3s ease; padding: 24px 20px;
-            display: flex; flex-direction: column;
+        .mp-catalog-modal-body {
+            display: flex; flex: 1; overflow: hidden; min-height: 0;
         }
-        .mp-lang-drawer.open { right: 0; }
-        .mp-lang-drawer h3 { font-size: 18px; font-weight: 700; margin-bottom: 20px; color: var(--text); }
-        .mp-lang-option {
-            padding: 12px 16px; border-radius: 8px; margin-bottom: 6px; cursor: pointer;
-            font-size: 15px; font-weight: 500; transition: background .1s; display: flex; align-items: center; gap: 8px;
+
+        /* Chap panel - bo'limlar */
+        .mp-catalog-left {
+            width: 180px; flex-shrink: 0; background: #f9f9f9;
+            border-right: 1px solid var(--border); overflow-y: auto;
         }
-        .mp-lang-option:hover { background: #f5f5f5; }
-        .mp-lang-option.active { background: #fff5f5; color: var(--red); font-weight: 600; }
+        .mp-catalog-left-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 16px; font-size: 13px; font-weight: 500;
+            color: #444; cursor: pointer; border-left: 3px solid transparent;
+            transition: all .12s; user-select: none;
+        }
+        .mp-catalog-left-item:hover { background: #fff; color: var(--red); }
+        .mp-catalog-left-item.active {
+            background: #fff; color: var(--red);
+            border-left-color: var(--red); font-weight: 700;
+        }
+        .mp-catalog-left-item .cat-emoji { font-size: 15px; flex-shrink: 0; }
 
-        /* MODAL (korbina haqida) */
-        .mp-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.4); z-index: 9999; align-items: center; justify-content: center; }
-        .mp-modal-overlay.open { display: flex; }
-        .mp-modal { background: #fff; border-radius: 16px; padding: 32px 24px; max-width: 300px; width: 90%; text-align: center; }
-        .mp-modal-icon { font-size: 44px; margin-bottom: 10px; }
-        .mp-modal-title { font-family: 'Exo 2', sans-serif; font-size: 20px; font-weight: 800; margin-bottom: 8px; }
-        .mp-modal-desc { font-size: 14px; color: #888; margin-bottom: 20px; }
-        .mp-modal-close { background: var(--red); color: #fff; border: none; border-radius: 10px; padding: 10px 24px; font-size: 14px; cursor: pointer; }
+        /* O'ng panel - kategoriyalar va subkategoriyalar */
+        .mp-catalog-right {
+            flex: 1; overflow-y: auto; padding: 16px 18px;
+            display: flex; flex-direction: column; gap: 18px;
+        }
 
-        /* ========= RESPONSIVE ========= */
-        /* Planshet va telefon (≤1024px) - action tugmalar yashirin */
+        .mp-cat-group {}
+        .mp-cat-group-title {
+            font-size: 13px; font-weight: 700; color: var(--text);
+            margin-bottom: 8px; padding-bottom: 5px;
+            border-bottom: 2px solid var(--red);
+            display: inline-block; cursor: pointer;
+            transition: color .1s;
+        }
+        .mp-cat-group-title:hover { color: var(--red); }
+
+        .mp-subcat-list { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 2px; }
+        .mp-subcat-item {
+            font-size: 12px; color: #555; padding: 5px 11px;
+            border-radius: 6px; background: #f2f2f2;
+            cursor: pointer; text-decoration: none; white-space: nowrap;
+            border: 1px solid transparent; transition: all .1s;
+        }
+        .mp-subcat-item:hover {
+            background: #fff0f0; color: var(--red);
+            border-color: #ffd0d0;
+        }
+
+        /* ===== MODAL (korbina) ===== */
+        .mp-cart-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,.4); z-index: 9999;
+            align-items: center; justify-content: center;
+        }
+        .mp-cart-overlay.open { display: flex; }
+        .mp-cart-modal {
+            background: #fff; border-radius: 16px; padding: 32px 24px;
+            max-width: 300px; width: 90%; text-align: center;
+        }
+        .mp-cart-modal-icon { font-size: 44px; margin-bottom: 10px; }
+        .mp-cart-modal-title {
+            font-family: 'Exo 2', sans-serif; font-size: 20px;
+            font-weight: 800; margin-bottom: 8px;
+        }
+        .mp-cart-modal-desc { font-size: 14px; color: #888; margin-bottom: 20px; }
+        .mp-cart-modal-close {
+            background: var(--red); color: #fff; border: none;
+            border-radius: 10px; padding: 10px 24px; font-size: 14px; cursor: pointer;
+        }
+
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .mp-actions { display: none; }
-            .mp-catalog-mega { width: 100%; left: 0; border-radius: 0 0 12px 12px; }
         }
 
-        /* Telefon (≤600px) - faqat qidiruv va 3 nuqta */
         @media (max-width: 600px) {
-            .mp-top { padding: 10px 12px; flex-wrap: nowrap; }
+            .mp-top { flex-wrap: nowrap; padding: 10px 12px; gap: 8px; }
             .mp-logo { display: none; }
             .mp-catalog-btn { display: none; }
-            .mp-search-wrap { flex: 1; min-width: 0; }
-            .mp-search-input { border-radius: 10px 0 0 10px; }
-            .mp-search-btn { border-radius: 0 10px 10px 0; }
-            .mp-lang-btn { display: flex; } /* 3 nuqta ko'rinadi */
-            .mp-catalog-mega { display: none !important; } /* mega-menyu kerak emas */
+            /* Menu tugmasi chapda ko'rinadi */
+            .mp-menu-btn { display: flex; }
+            /* Search to'liq yumaloq, keng */
+            .mp-search-input {
+                border-right: 1.5px solid var(--border);
+                border-radius: 14px;
+            }
+            .mp-search-btn { display: none; }
+            .mp-cats { display: none; }
+            .mp-catalog-left { width: 120px; }
+            .mp-catalog-left-item { padding: 10px 10px; font-size: 12px; }
         }
 
-        /* Planshet (601px-1024px) - katalog va qidiruv, boshqa hech narsa */
         @media (min-width: 601px) and (max-width: 1024px) {
-            .mp-logo { display: flex; } /* logo ko'rinadi */
+            .mp-logo { display: flex; }
             .mp-catalog-btn { display: flex; }
-            .mp-lang-btn { display: none; }
+            .mp-menu-btn { display: none; }
         }
     </style>
 </head>
@@ -214,7 +362,17 @@
     <div class="mp-top">
         <a href="index.html" class="mp-logo">MEDIA<span class="r">PARK</span></a>
 
-        <button class="mp-catalog-btn" onclick="toggleCatalog()">
+        <!-- Faqat telefonda: menyu tugmasi CHAPDA (drawer ochadi) -->
+        <button class="mp-menu-btn mp-menu-btn-left" onclick="openSideMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <line x1="3" y1="12" x2="15" y2="12"/>
+                <line x1="3" y1="18" x2="18" y2="18"/>
+            </svg>
+        </button>
+
+        <!-- Desktop/planshet: Каталог tugmasi -->
+        <button class="mp-catalog-btn" onclick="openCatalog()">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
                 <line x1="3" y1="6" x2="21" y2="6"/>
                 <line x1="3" y1="12" x2="21" y2="12"/>
@@ -223,14 +381,9 @@
             Каталог
         </button>
 
-        <div class="mp-catalog-overlay" id="navCatalogOverlay" onclick="closeCatalog()"></div>
-        <div class="mp-catalog-mega" id="navCatalogMega">
-            <div class="mp-mega-left" id="megaLeft"></div>
-            <div class="mp-mega-right" id="megaRight"></div>
-        </div>
-
         <div class="mp-search-wrap">
-            <input class="mp-search-input" id="navSearchInput" type="text" placeholder="Холодильники, телефоны, ноутбуки..." autocomplete="off"/>
+            <input class="mp-search-input" id="navSearchInput" type="text"
+                   placeholder="Холодильники, телефоны, ноутбуки..." autocomplete="off"/>
             <div class="mp-search-animated" id="navSearchAnimated"></div>
             <button class="mp-search-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -241,270 +394,405 @@
             <div class="mp-search-drop" id="navSearchDrop"></div>
         </div>
 
-        <!-- Faqat telefonda ko'rinadigan 3 nuqta (til) -->
-        <button class="mp-lang-btn" id="langBtn" onclick="toggleLangDrawer()">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
-            </svg>
-        </button>
-
-        <!-- Desktop uchun action tugmalar -->
+        <!-- Desktop: action tugmalar -->
         <div class="mp-actions">
             <a href="#" class="mp-action">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="2"/><path d="M9 12h6M9 16h4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2"/>
+                    <rect x="9" y="3" width="6" height="4" rx="2"/>
+                    <path d="M9 12h6M9 16h4"/>
+                </svg>
                 <span>Статус</span>
             </a>
             <a href="#" class="mp-action">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M18 20V10M12 20V4M6 20v-6"/>
+                </svg>
                 <span>Сравнить</span>
             </a>
             <button class="mp-action" onclick="document.getElementById('navCartModal').classList.add('open')">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 01-8 0"/>
+                </svg>
                 <span>Корзина</span>
             </button>
             <a href="favorites.html" class="mp-action">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+                </svg>
                 <span>Избранное</span>
             </a>
             <button class="mp-action" id="navProfileBtn" onclick="handleProfile()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
                 <span id="navProfileLabel">Войти</span>
             </button>
         </div>
     </div>
 
+    <!-- KATEGORIYA PILLS — barcha ekranda ko'rinadi -->
     <div class="mp-cats" id="navCatsRow">
         <div class="mp-cat-pill active">🎯 Акции</div>
     </div>
 </nav>
 
-<!-- TIL DRAWER -->
-<div class="mp-lang-overlay" id="langOverlay" onclick="closeLangDrawer()"></div>
-<div class="mp-lang-drawer" id="langDrawer">
-    <h3>🌐 Til</h3>
-    <div class="mp-lang-option" onclick="setLanguage('uz')" data-lang="uz">
-        <span>🇺🇿</span> O'zbekcha
-    </div>
-    <div class="mp-lang-option" onclick="setLanguage('ru')" data-lang="ru">
-        <span>🇷🇺</span> Русский
+<!-- ===== KATALOG MODAL ===== -->
+<div class="mp-catalog-modal-bg" id="catalogModalBg" onclick="closeCatalogOnBg(event)">
+    <div class="mp-catalog-modal" id="catalogModal">
+        <div class="mp-catalog-modal-head">
+            <h2>📦 Каталог</h2>
+            <button class="mp-catalog-modal-close" onclick="closeCatalog()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+        <div class="mp-catalog-modal-body">
+            <div class="mp-catalog-left" id="catalogLeft">
+                <div style="padding:16px;font-size:13px;color:#aaa;">Yuklanmoqda...</div>
+            </div>
+            <div class="mp-catalog-right" id="catalogRight">
+                <div style="font-size:13px;color:#aaa;">Katalogni tanlang</div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- MODAL (korbina) -->
-<div class="mp-modal-overlay" id="navCartModal" onclick="this.classList.remove('open')">
-    <div class="mp-modal" onclick="event.stopPropagation()">
-        <div class="mp-modal-icon">🚧</div>
-        <div class="mp-modal-title">Tez kunda!</div>
-        <div class="mp-modal-desc">Корзина hozircha tayyorlanmoqda.<br>Tez orada to'liq ishga tushadi!</div>
-        <button class="mp-modal-close" onclick="document.getElementById('navCartModal').classList.remove('open')">Tushundim</button>
+<!-- ===== CHAPDAN CHIQADIGAN SIDE DRAWER (telefon menu) ===== -->
+<div class="mp-side-overlay" id="sideOverlay" onclick="closeSideMenu()"></div>
+<div class="mp-side-drawer" id="sideDrawer">
+    <div class="mp-side-head">
+        <a href="index.html" class="mp-side-head-logo">MEDIA<span class="r">PARK</span></a>
+        <button class="mp-side-close" onclick="closeSideMenu()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+        </button>
+    </div>
+    <div class="mp-side-body">
+        <a href="about.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="8" x2="12" y2="12"/>
+                <line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            Biz haqimizda
+        </a>
+        <a href="blog.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/>
+                <path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/>
+            </svg>
+            MediaBlog
+        </a>
+        <div class="mp-side-divider"></div>
+        <a href="delivery.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <rect x="1" y="3" width="15" height="13" rx="2"/>
+                <path d="M16 8h4l3 3v5h-7V8z"/>
+                <circle cx="5.5" cy="18.5" r="2.5"/>
+                <circle cx="18.5" cy="18.5" r="2.5"/>
+            </svg>
+            Yetkazib berish
+        </a>
+        <a href="stores.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+                <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            Do'konlar
+        </a>
+        <a href="installment.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <rect x="1" y="4" width="22" height="16" rx="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+            </svg>
+            Muddatli to'lov
+        </a>
+        <div class="mp-side-divider"></div>
+        <a href="contact.html" class="mp-side-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.5a19.79 19.79 0 01-3-8.59A2 2 0 012.18 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 9.14a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/>
+            </svg>
+            Biz bilan bog'laning
+        </a>
+    </div>
+    <div class="mp-side-footer">
+        <div class="mp-side-footer-label">Til / Язык</div>
+        <div class="mp-side-lang-btns">
+            <button class="mp-side-lang-btn" data-lang="uz" onclick="setSideLang('uz')">🇺🇿 O'zbek</button>
+            <button class="mp-side-lang-btn" data-lang="ru" onclick="setSideLang('ru')">🇷🇺 Русский</button>
+        </div>
+    </div>
+</div>
+
+<!-- KORBINA MODAL -->
+<div class="mp-cart-overlay" id="navCartModal" onclick="this.classList.remove('open')">
+    <div class="mp-cart-modal" onclick="event.stopPropagation()">
+        <div class="mp-cart-modal-icon">🚧</div>
+        <div class="mp-cart-modal-title">Tez kunda!</div>
+        <div class="mp-cart-modal-desc">Корзина hozircha tayyorlanmoqda.<br>Tez orada to'liq ishga tushadi!</div>
+        <button class="mp-cart-modal-close" onclick="document.getElementById('navCartModal').classList.remove('open')">Tushundim</button>
     </div>
 </div>
 
 <script>
-    (function () {
-        const NAV_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
-            ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+(function () {
+    const NAV_API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
 
-        function mUrl(path) {
-            if (!path) return null;
-            if (path.startsWith('http')) return path;
-            if (path.startsWith('/media/')) return NAV_API + path;
-            return NAV_API + '/media/' + path;
-        }
+    function mUrl(path) {
+        if (!path) return null;
+        if (path.startsWith('http')) return path;
+        if (path.startsWith('/media/')) return NAV_API + path;
+        return NAV_API + '/media/' + path;
+    }
 
-        const fmt = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' сум';
+    const fmt = n => new Intl.NumberFormat('ru-RU').format(Math.round(n)) + ' сум';
 
-        // Profile cache (faqat desktop uchun kerak, lekin kod zarar qilmaydi)
-        const PROFILE_KEY = 'mp_profile';
-        window.saveProfileCache = function (userData) {
-            localStorage.setItem(PROFILE_KEY, JSON.stringify({
-                username: userData.username || '',
-                first_name: userData.first_name || '',
-                last_name: userData.last_name || '',
-                avatar: userData.avatar || userData.image || null,
-            }));
-        };
-        window.clearProfileCache = function () { localStorage.removeItem(PROFILE_KEY); };
-        function getProfileCache() { try { const r = localStorage.getItem(PROFILE_KEY); return r ? JSON.parse(r) : null; } catch { return null; } }
-        function renderProfileLabel(user) {
-            const label = document.getElementById('navProfileLabel');
-            if (label) label.textContent = user.first_name || user.username || 'Профиль';
-        }
-        async function loadProfile() {
-            const token = localStorage.getItem('access_token');
-            if (!token) return;
-            const cached = getProfileCache();
-            if (cached) renderProfileLabel(cached);
-            try {
-                const res = await fetch(`${NAV_API}/api/v1/profile/`, { headers: { Authorization: `Bearer ${token}` } });
-                if (res.ok) { const user = await res.json(); window.saveProfileCache(user); renderProfileLabel(user); }
-            } catch {}
-        }
-        window.handleProfile = function () {
-            if (localStorage.getItem('access_token')) location.href = 'profile.html';
-            else location.href = 'login.html';
-        };
+    // ---- PROFILE ----
+    const PROFILE_KEY = 'mp_profile';
+    window.saveProfileCache = function (userData) {
+        localStorage.setItem(PROFILE_KEY, JSON.stringify({
+            username: userData.username || '',
+            first_name: userData.first_name || '',
+            last_name: userData.last_name || '',
+            avatar: userData.avatar || userData.image || null,
+        }));
+    };
+    window.clearProfileCache = function () { localStorage.removeItem(PROFILE_KEY); };
+    function getProfileCache() {
+        try { const r = localStorage.getItem(PROFILE_KEY); return r ? JSON.parse(r) : null; } catch { return null; }
+    }
+    function renderProfileLabel(user) {
+        const label = document.getElementById('navProfileLabel');
+        if (label) label.textContent = user.first_name || user.username || 'Профиль';
+    }
+    async function loadProfile() {
+        const token = localStorage.getItem('access_token');
+        if (!token) return;
+        const cached = getProfileCache();
+        if (cached) renderProfileLabel(cached);
+        try {
+            const res = await fetch(`${NAV_API}/api/v1/profile/`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (res.ok) { const user = await res.json(); window.saveProfileCache(user); renderProfileLabel(user); }
+        } catch {}
+    }
+    window.handleProfile = function () {
+        if (localStorage.getItem('access_token')) location.href = 'profile.html';
+        else location.href = 'login.html';
+    };
 
-        // Categories pills
-        async function loadCategories() {
-            try {
-                const res = await fetch(`${NAV_API}/api/v1/categories/`);
-                const data = await res.json();
-                const cats = Array.isArray(data) ? data : (data.results || []);
-                const row = document.getElementById('navCatsRow');
-                cats.forEach(cat => {
-                    const pill = document.createElement('div');
-                    pill.className = 'mp-cat-pill';
-                    pill.innerHTML = cat.emoji ? `${cat.emoji} ${cat.name}` : cat.name;
-                    pill.onclick = () => {
-                        document.querySelectorAll('.mp-cat-pill').forEach(p => p.classList.remove('active'));
-                        pill.classList.add('active');
-                        location.href = `products.html?category=${cat.id}`;
-                    };
-                    row.appendChild(pill);
-                });
-            } catch {}
-        }
+    // ---- KATEGORIYA PILLS ----
+    async function loadCategories() {
+        try {
+            const res = await fetch(`${NAV_API}/api/v1/categories/`);
+            const data = await res.json();
+            const cats = Array.isArray(data) ? data : (data.results || []);
+            const row = document.getElementById('navCatsRow');
+            cats.forEach(cat => {
+                const pill = document.createElement('div');
+                pill.className = 'mp-cat-pill';
+                pill.innerHTML = cat.emoji ? `${cat.emoji} ${cat.name}` : cat.name;
+                pill.onclick = () => {
+                    document.querySelectorAll('.mp-cat-pill').forEach(p => p.classList.remove('active'));
+                    pill.classList.add('active');
+                    location.href = `products.html?category=${cat.id}`;
+                };
+                row.appendChild(pill);
+            });
+        } catch {}
+    }
 
-        // Animated placeholder
-        async function loadAnimatedNames() {
-            try {
-                const res = await fetch(`${NAV_API}/api/v1/products/`);
-                const data = await res.json();
-                const products = Array.isArray(data) ? data : (data.results || []);
-                const names = products.slice(0, 5).map(p => p.name);
-                const el = document.getElementById('navSearchAnimated');
-                if (names.length) el.innerHTML = names.map(n => `<span class="mp-animated-word">${n}</span>`).join('');
-            } catch {}
-        }
-
-        // Mega menu
-        const mega = document.getElementById('navCatalogMega');
-        const overlayCatalog = document.getElementById('navCatalogOverlay');
-        const megaLeft = document.getElementById('megaLeft');
-        const megaRight = document.getElementById('megaRight');
-        let catalogData = [], catalogLoaded = false;
-
-        function buildMegaMenu(catalogues) {
-            catalogData = catalogues;
-            megaLeft.innerHTML = catalogues.map((cat, i) => `
-                <div class="mp-mega-catalog-item ${i===0?'active':''}"
-                     onmouseenter="showCatalogCategories(${i})" onclick="goToCatalogue(${cat.id})">
-                    <span>${cat.name}</span>
-                </div>`).join('');
-            if (catalogues.length) showCatalogCategories(0);
-        }
-
-        window.showCatalogCategories = function (index) {
-            const cat = catalogData[index];
-            if (!cat) return;
-            document.querySelectorAll('.mp-mega-catalog-item').forEach((el, i) => el.classList.toggle('active', i===index));
-            if (!cat.categories?.length) {
-                megaRight.innerHTML = '<div class="mp-mega-empty">Нет категорий</div>';
-                return;
+    // ---- ANIMATED PLACEHOLDER ----
+    async function loadAnimatedNames() {
+        try {
+            const res = await fetch(`${NAV_API}/api/v1/products/`);
+            const data = await res.json();
+            const products = Array.isArray(data) ? data : (data.results || []);
+            const names = products.slice(0, 5).map(p => p.name);
+            const el = document.getElementById('navSearchAnimated');
+            if (names.length) {
+                el.innerHTML = names.map(n => `<span class="mp-animated-word">${n}</span>`).join('');
             }
-            megaRight.innerHTML = cat.categories.map(c => `
-                <div>
-                    <div class="mp-mega-category-title" onclick="goToCategory(${c.id})">${c.name}</div>
-                    <div class="mp-mega-subcategory-list">
-                        ${(c.sub_categories||[]).map(s => `<a class="mp-mega-subcategory-item" href="products.html?subcategory=${s.id}">${s.name}</a>`).join('')}
-                    </div>
-                </div>`).join('');
-        };
+        } catch {}
+    }
 
-        window.goToCatalogue = function (id) { closeCatalog(); location.href = `products.html?catalogue=${id}`; };
-        window.goToCategory  = function (id) { closeCatalog(); location.href = `products.html?category=${id}`; };
+    // ---- KATALOG MODAL ----
+    let catalogData = [];
+    let catalogLoaded = false;
+    let activeLeftIdx = 0;
 
-        async function loadCatalog() {
-            megaLeft.innerHTML = '<div class="mp-mega-empty">Yuklanmoqda...</div>';
-            try {
-                const res = await fetch(`${NAV_API}/api/v1/catalogues/`);
-                const data = await res.json();
-                buildMegaMenu(Array.isArray(data)?data:(data.results||[]));
-                catalogLoaded = true;
-            } catch { megaLeft.innerHTML = '<div class="mp-mega-empty">Katalog yuklanmadi</div>'; }
+    function buildCatalogLeft(catalogues) {
+        const leftEl = document.getElementById('catalogLeft');
+        if (!catalogues.length) {
+            leftEl.innerHTML = '<div style="padding:16px;font-size:13px;color:#aaa;">Bo\'sh</div>';
+            return;
+        }
+        leftEl.innerHTML = catalogues.map((cat, i) => `
+            <div class="mp-catalog-left-item ${i === 0 ? 'active' : ''}"
+                 data-idx="${i}"
+                 onclick="selectCatalogItem(${i})">
+                ${cat.emoji ? `<span class="cat-emoji">${cat.emoji}</span>` : ''}
+                <span>${cat.name}</span>
+            </div>
+        `).join('');
+    }
+
+    window.selectCatalogItem = function (idx) {
+        activeLeftIdx = idx;
+        document.querySelectorAll('.mp-catalog-left-item').forEach((el, i) =>
+            el.classList.toggle('active', i === idx)
+        );
+        renderCatalogRight(idx);
+    };
+
+    function renderCatalogRight(idx) {
+        const cat = catalogData[idx];
+        const rightEl = document.getElementById('catalogRight');
+        if (!cat) return;
+
+        if (!cat.categories || !cat.categories.length) {
+            rightEl.innerHTML = `
+                <div style="text-align:center;padding:32px;color:#aaa;">
+                    <div style="font-size:32px;margin-bottom:8px;">📂</div>
+                    <div style="font-size:13px;">Kategoriyalar mavjud emas</div>
+                </div>`;
+            return;
         }
 
-        window.toggleCatalog = function () {
-            if (mega.classList.contains('open')) { closeCatalog(); return; }
-            mega.classList.add('open');
-            overlayCatalog.classList.add('open');
-            if (!catalogLoaded) loadCatalog();
-        };
-        window.closeCatalog = function () { mega.classList.remove('open'); overlayCatalog.classList.remove('open'); };
+        rightEl.innerHTML = cat.categories.map(c => `
+            <div class="mp-cat-group">
+                <div class="mp-cat-group-title"
+                     onclick="location.href='products.html?category=${c.id}'; closeCatalog();">
+                    ${c.name}
+                </div>
+                <div class="mp-subcat-list">
+                    ${(c.sub_categories || []).map(s => `
+                        <a class="mp-subcat-item"
+                           href="products.html?subcategory=${s.id}"
+                           onclick="closeCatalog()">
+                            ${s.name}
+                        </a>
+                    `).join('')}
+                </div>
+            </div>
+        `).join('');
+    }
 
-        document.addEventListener('keydown', e => { if (e.key==='Escape') { closeCatalog(); closeLangDrawer(); } });
-        document.addEventListener('click', e => {
-            if (!e.target.closest('.mp-search-wrap')) document.getElementById('navSearchDrop').classList.remove('open');
-            if (!e.target.closest('.mp-catalog-btn') && !e.target.closest('.mp-catalog-mega')) closeCatalog();
+    async function loadCatalog() {
+        const leftEl = document.getElementById('catalogLeft');
+        leftEl.innerHTML = '<div style="padding:16px;font-size:13px;color:#aaa;">Yuklanmoqda...</div>';
+        try {
+            const res = await fetch(`${NAV_API}/api/v1/catalogues/`);
+            const data = await res.json();
+            catalogData = Array.isArray(data) ? data : (data.results || []);
+            buildCatalogLeft(catalogData);
+            if (catalogData.length) renderCatalogRight(0);
+            catalogLoaded = true;
+        } catch {
+            const leftEl = document.getElementById('catalogLeft');
+            leftEl.innerHTML = '<div style="padding:16px;font-size:13px;color:#e00;">Xatolik!</div>';
+        }
+    }
+
+    window.openCatalog = function () {
+        document.getElementById('catalogModalBg').classList.add('open');
+        document.body.style.overflow = 'hidden';
+        if (!catalogLoaded) loadCatalog();
+    };
+    window.closeCatalog = function () {
+        document.getElementById('catalogModalBg').classList.remove('open');
+        document.body.style.overflow = '';
+    };
+    window.closeCatalogOnBg = function (e) {
+        if (e.target === document.getElementById('catalogModalBg')) closeCatalog();
+    };
+
+    // ---- SEARCH ----
+    let searchTimer;
+    const inp = document.getElementById('navSearchInput');
+    const drop = document.getElementById('navSearchDrop');
+
+    inp.addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        const q = inp.value.trim();
+        if (!q) { drop.classList.remove('open'); return; }
+        drop.innerHTML = '<div class="mp-search-msg">Qidirilmoqda...</div>';
+        drop.classList.add('open');
+        searchTimer = setTimeout(async () => {
+            try {
+                const res = await fetch(`${NAV_API}/api/v1/products/?search=${encodeURIComponent(q)}`);
+                const data = await res.json();
+                const list = (Array.isArray(data) ? data : (data.results || [])).slice(0, 8);
+                if (!list.length) {
+                    drop.innerHTML = '<div class="mp-search-msg">Mahsulot topilmadi</div>';
+                    return;
+                }
+                drop.innerHTML = list.map(p => {
+                    const url = p.image?.[0]?.image ? mUrl(p.image[0].image) : null;
+                    const img = url
+                        ? `<img src="${url}" onerror="this.outerHTML='<div class=mp-search-ph>📦</div>'">`
+                        : '<div class="mp-search-ph">📦</div>';
+                    return `<a class="mp-search-item" href="product-detail.html?id=${p.id}">
+                        ${img}
+                        <span class="mp-search-name">${p.name}</span>
+                        <span class="mp-search-price">${fmt(p.price)}</span>
+                    </a>`;
+                }).join('');
+            } catch {
+                drop.innerHTML = '<div class="mp-search-msg">Xatolik yuz berdi</div>';
+            }
+        }, 400);
+    });
+
+    // ---- SIDE DRAWER (telefon menu) ----
+    window.openSideMenu = function () {
+        document.getElementById('sideDrawer').classList.add('open');
+        document.getElementById('sideOverlay').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    };
+    window.closeSideMenu = function () {
+        document.getElementById('sideDrawer').classList.remove('open');
+        document.getElementById('sideOverlay').classList.remove('open');
+        document.body.style.overflow = '';
+    };
+    window.setSideLang = function (lang) {
+        document.querySelectorAll('.mp-side-lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === lang);
         });
-
-        // Search
-        let searchTimer;
-        const inp = document.getElementById('navSearchInput');
-        const drop = document.getElementById('navSearchDrop');
-
-        inp.addEventListener('input', () => {
-            clearTimeout(searchTimer);
-            const q = inp.value.trim();
-            if (!q) { drop.classList.remove('open'); return; }
-            drop.innerHTML = '<div class="mp-search-msg">Qidirilmoqda...</div>';
-            drop.classList.add('open');
-            searchTimer = setTimeout(async () => {
-                try {
-                    const res = await fetch(`${NAV_API}/api/v1/products/?search=${encodeURIComponent(q)}`);
-                    const data = await res.json();
-                    const list = (Array.isArray(data)?data:(data.results||[])).slice(0,8);
-                    if (!list.length) { drop.innerHTML = '<div class="mp-search-msg">Mahsulot topilmadi</div>'; return; }
-                    drop.innerHTML = list.map(p => {
-                        const url = p.image?.[0]?.image ? mUrl(p.image[0].image) : null;
-                        const img = url ? `<img src="${url}" onerror="this.outerHTML='<div class=mp-search-ph>📦</div>'">` : '<div class="mp-search-ph">📦</div>';
-                        return `<a class="mp-search-item" href="product-detail.html?id=${p.id}">
-                            ${img}<span class="mp-search-name">${p.name}</span><span class="mp-search-price">${fmt(p.price)}</span>
-                        </a>`;
-                    }).join('');
-                } catch { drop.innerHTML = '<div class="mp-search-msg">Xatolik yuz berdi</div>'; }
-            }, 400);
+        document.documentElement.setAttribute('lang', lang);
+        localStorage.setItem('mp_lang', lang);
+    };
+    (function initSideLang() {
+        const saved = localStorage.getItem('mp_lang') || 'ru';
+        document.documentElement.setAttribute('lang', saved);
+        document.querySelectorAll('.mp-side-lang-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.lang === saved);
         });
-
-        // ----- TIL DRAWER -----
-        const langDrawer = document.getElementById('langDrawer');
-        const langOverlay = document.getElementById('langOverlay');
-        window.toggleLangDrawer = function () {
-            const isOpen = langDrawer.classList.contains('open');
-            if (isOpen) closeLangDrawer();
-            else { langDrawer.classList.add('open'); langOverlay.classList.add('open'); }
-        };
-        window.closeLangDrawer = function () {
-            langDrawer.classList.remove('open');
-            langOverlay.classList.remove('open');
-        };
-
-        window.setLanguage = function (lang) {
-            // Faol tilni belgilab, HTML lang atributini o'zgartiramiz
-            document.querySelectorAll('.mp-lang-option').forEach(el => el.classList.remove('active'));
-            document.querySelector(`.mp-lang-option[data-lang="${lang}"]`).classList.add('active');
-            document.documentElement.setAttribute('lang', lang);
-            localStorage.setItem('mp_lang', lang);
-            closeLangDrawer();
-            // Kerak bo'lsa sahifani qayta yuklash yoki matnlarni tarjima qilish
-            // hozircha demo sifatida alert
-            alert(`Til o'zgartirildi: ${lang === 'uz' ? 'O'zbekcha' : 'Русский'}`);
-        };
-
-        // Saqlangan tilni yuklash
-        (function initLang() {
-            const savedLang = localStorage.getItem('mp_lang') || 'ru';
-            document.documentElement.setAttribute('lang', savedLang);
-            const activeEl = document.querySelector(`.mp-lang-option[data-lang="${savedLang}"]`);
-            if (activeEl) activeEl.classList.add('active');
-        })();
-
-        // Ishga tushirish
-        loadProfile();
-        loadCategories();
-        loadAnimatedNames();
     })();
+
+    // ---- KLAVIATURA & TASHQI KLIK ----
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') { closeCatalog(); closeSideMenu(); }
+    });
+    document.addEventListener('click', e => {
+        if (!e.target.closest('.mp-search-wrap')) drop.classList.remove('open');
+    });
+
+    // ---- ISHGA TUSHIRISH ----
+    loadProfile();
+    loadCategories();
+    loadAnimatedNames();
+})();
 </script>
 
 </body>
