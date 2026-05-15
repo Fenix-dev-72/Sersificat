@@ -1,261 +1,543 @@
 <!DOCTYPE html>
-<html lang="uz">
+<html lang="ru">
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>MediaPark — Footer + Mobile Nav</title>
+    <title>MediaPark — Footer</title>
     <link rel="preconnect" href="https://fonts.googleapis.com"/>
     <link href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #f5f5f5; min-height: 100vh; }
-
-        /* ========== FOOTER (desktop) ========== */
-        .mp-footer { width: 100%; margin-top: 40px; }
-
-        /* Asosiy footer faqat desktop/planshet uchun (1025px+) */
-        .mp-footer-desktop { display: block; }
-        @media (max-width: 1024px) {
-            .mp-footer-desktop { display: none; }
+        :root {
+            --red: #E8001C;
+            --red-dark: #c4001a;
+            --dark: #1e2533;
+            --darker: #171d29;
+            --muted: #8b95a8;
+            --nav-h: 64px;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
         }
 
-        .mp-footer-main {
-            background: #1e2533; padding: 48px 40px;
-        }
+        /* ===================== DESKTOP FOOTER ===================== */
+        .mp-footer-desktop { background: var(--dark); padding: 48px 40px 36px; }
         .mp-footer-inner {
             max-width: 1400px; margin: 0 auto;
             display: grid;
-            grid-template-columns: 280px 1fr 1fr 1fr 1fr;
-            gap: 40px;
-            align-items: start;
+            grid-template-columns: 260px 1fr 1fr 1fr 1fr;
+            gap: 40px; align-items: start;
         }
-
         .mp-footer-logo {
             font-family: 'Exo 2', sans-serif; font-size: 26px; font-weight: 900;
-            color: #fff; text-decoration: none; letter-spacing: -0.5px; display: inline-block; margin-bottom: 20px;
+            color: #fff; text-decoration: none; letter-spacing: -0.5px;
+            display: inline-block; margin-bottom: 18px;
         }
-        .mp-footer-logo .red { color: #E8001C; }
-        .mp-footer-help { font-size: 14px; color: #8b95a8; margin-bottom: 8px; }
-        .mp-footer-phone { font-size: 18px; font-weight: 700; color: #fff; text-decoration: none; display: block; margin-bottom: 14px; }
-        .mp-footer-phone:hover { color: #E8001C; }
-        .mp-footer-schedule { font-size: 13px; color: #8b95a8; line-height: 1.8; }
-
-        .mp-footer-pay {}
-        .mp-footer-col-title { font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 16px; }
-        .mp-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-        .mp-pay-card {
-            background: #2a3347; border: 1px solid #3a4560; border-radius: 10px;
-            height: 52px; display: flex; align-items: center; justify-content: center; cursor: pointer;
-        }
-        .mp-pay-card:hover { border-color: #E8001C; background: #2f3a52; }
-        .mp-pay-card .uzcard { font-size: 15px; font-weight: 800; color: #fff; }
-        .mp-pay-card .uzcard .u {
-            display: inline-flex; align-items: center; justify-content: center;
-            width: 22px; height: 22px; border: 2.5px solid #7c8fa8; border-radius: 50%;
-            font-size: 13px; font-weight: 900; color: #7c8fa8; margin-right: 4px;
-        }
-        .mp-pay-card .humo { font-size: 18px; font-weight: 900; color: #fff; }
-        .mp-pay-card .humo .h { color: #E8001C; }
-        .mp-pay-card .click-logo { display: flex; align-items: center; gap: 4px; }
-        .mp-pay-card .click-logo .dot { width: 10px; height: 10px; background: #3b9dff; border-radius: 50%; }
-        .mp-pay-card .click-logo span { font-size: 16px; font-weight: 700; color: #fff; }
-        .mp-pay-card .payme { background: #00ccaa; border-radius: 6px; padding: 4px 10px; font-size: 14px; font-weight: 800; color: #fff; }
-        .mp-pay-card .visa { font-size: 22px; font-weight: 900; color: #fff; font-style: italic; }
-        .mp-pay-card .mc { display: flex; align-items: center; }
-        .mp-pay-card .mc .circle1 { width: 26px; height: 26px; background: #eb001b; border-radius: 50%; }
-        .mp-pay-card .mc .circle2 { width: 26px; height: 26px; background: #f79e1b; border-radius: 50%; margin-left: -10px; }
-
-        .mp-footer-nav a {
-            display: block; font-size: 14px; color: #8b95a8; text-decoration: none; margin-bottom: 12px;
-        }
+        .mp-footer-logo .red { color: var(--red); }
+        .mp-footer-help { font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+        .mp-footer-phone { font-size: 18px; font-weight: 700; color: #fff; text-decoration: none; display: block; margin-bottom: 12px; transition: color .15s; }
+        .mp-footer-phone:hover { color: var(--red); }
+        .mp-footer-schedule { font-size: 12px; color: var(--muted); line-height: 1.9; }
+        .mp-footer-col-title { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 14px; }
+        .mp-pay-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+        .mp-pay-card { background: #2a3347; border: 1px solid #3a4560; border-radius: 10px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all .15s; }
+        .mp-pay-card:hover { border-color: var(--red); background: #2f3a52; }
+        .pay-uzcard { font-size: 13px; font-weight: 800; color: #fff; display: flex; align-items: center; gap: 4px; }
+        .pay-uzcard .u { width: 20px; height: 20px; border: 2px solid #7c8fa8; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; color: #7c8fa8; }
+        .pay-humo { font-size: 16px; font-weight: 900; color: #fff; }
+        .pay-humo .h { color: var(--red); }
+        .pay-click { display: flex; align-items: center; gap: 5px; }
+        .pay-click .dot { width: 9px; height: 9px; background: #3b9dff; border-radius: 50%; }
+        .pay-click span { font-size: 15px; font-weight: 700; color: #fff; }
+        .pay-payme { background: #00ccaa; border-radius: 5px; padding: 3px 9px; font-size: 13px; font-weight: 800; color: #fff; }
+        .pay-visa { font-size: 20px; font-weight: 900; color: #fff; font-style: italic; }
+        .pay-mc { display: flex; align-items: center; }
+        .pay-mc .c1 { width: 24px; height: 24px; background: #eb001b; border-radius: 50%; }
+        .pay-mc .c2 { width: 24px; height: 24px; background: #f79e1b; border-radius: 50%; margin-left: -9px; }
+        .mp-footer-nav a { display: block; font-size: 13px; color: var(--muted); text-decoration: none; margin-bottom: 11px; transition: color .12s; }
         .mp-footer-nav a:hover { color: #fff; }
+        .mp-footer-bottom { background: var(--darker); padding: 14px 40px; }
+        .mp-footer-bottom-inner { max-width: 1400px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
+        .mp-footer-copy { font-size: 12px; color: var(--muted); }
+        .mp-footer-social-row { display: flex; gap: 10px; }
+        .mp-social-btn { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--muted); background: #2a3347; text-decoration: none; transition: all .12s; }
+        .mp-social-btn:hover { color: #fff; background: #3a4560; }
+        .mp-social-btn svg { width: 16px; height: 16px; }
 
-        .mp-footer-social {
-            background: #171d29; padding: 18px 40px;
-        }
-        .mp-footer-social-inner {
-            max-width: 1400px; margin: 0 auto; display: flex; justify-content: flex-end; gap: 16px;
-        }
-        .mp-social-btn {
-            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-            border-radius: 50%; color: #8b95a8; cursor: pointer;
-        }
-        .mp-social-btn:hover { color: #fff; background: #2a3347; }
-        .mp-social-btn svg { width: 20px; height: 20px; }
-
-        /* ========== MOBIL NAVIGATSIYA PANELI ========== */
+        /* ===================== MOBILE BOTTOM NAV ===================== */
         .mp-mobile-nav {
-            display: none; /* boshlangich yashirin */
+            display: none;
             position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: #fff;
-            border-top: 1px solid #e0e0e0;
-            border-radius: 20px 20px 0 0;
-            box-shadow: 0 -4px 16px rgba(0,0,0,0.1);
-            z-index: 999;
-            height: 64px;
-            padding: 0 16px;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 28px);
+            max-width: 480px;
+            background: rgba(255,255,255,0.55);
+            backdrop-filter: blur(32px) saturate(200%);
+            -webkit-backdrop-filter: blur(32px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.6);
+            border-radius: 36px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+            z-index: 1000;
+            height: 60px;
             justify-content: space-around;
             align-items: center;
+            padding: 0 6px;
         }
 
-        .mp-mobile-nav a,
-        .mp-mobile-nav button {
+        /* Nav items */
+        .mp-mobile-nav .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
-            color: #8b8bae;
+            gap: 0;
+            color: #aaa;
             text-decoration: none;
-            font-size: 10px;
-            font-weight: 500;
             background: none;
             border: none;
             cursor: pointer;
             flex: 1;
-            transition: color 0.15s;
-            white-space: nowrap;
+            height: 48px;
+            transition: color .15s;
+            -webkit-tap-highlight-color: transparent;
+            border-radius: 20px;
+            position: relative;
         }
-        .mp-mobile-nav a.active,
-        .mp-mobile-nav button.active {
-            color: #E8001C;
-            font-weight: 600;
-        }
-        .mp-mobile-nav svg {
-            width: 24px;
-            height: 24px;
+        .mp-mobile-nav .nav-item svg {
+            width: 26px;
+            height: 26px;
             stroke: currentColor;
             fill: none;
-            stroke-width: 1.8;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: stroke .15s;
         }
-        /* belgilar to'ldirilgan holda kerak bo'lsa alohida */
-        .mp-mobile-nav .active svg { stroke: #E8001C; }
+        .mp-mobile-nav .nav-item.active {
+            color: var(--red);
+        }
+        .mp-mobile-nav .nav-item.active svg,
+        .mp-mobile-nav .nav-item.active svg * {
+            stroke: var(--red) !important;
+        }
+        .mp-mobile-nav .nav-item.active::before {
+            content: '';
+            position: absolute;
+            inset: 4px 6px;
+            background: rgba(232,0,28,0.08);
+            border-radius: 16px;
+        }
+
+        /* Catalog item */
+        .nav-catalog-item {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-catalog-item .cat-pill {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            width: 100%;
+            height: 48px;
+            background: transparent;
+            border-radius: 20px;
+            color: #aaa;
+            cursor: pointer;
+            border: none;
+            transition: color .15s;
+            -webkit-tap-highlight-color: transparent;
+            position: relative;
+        }
+        .nav-catalog-item.open .cat-pill {
+            color: var(--red);
+        }
+        .nav-catalog-item.open .cat-pill::before {
+            content: '';
+            position: absolute;
+            inset: 4px 6px;
+            background: rgba(232,0,28,0.08);
+            border-radius: 16px;
+        }
+        .nav-catalog-item.open .cat-pill svg,
+        .nav-catalog-item.open .cat-pill svg * {
+            stroke: var(--red) !important;
+        }
+        .nav-catalog-item .cat-pill svg {
+            width: 26px;
+            height: 26px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 1.6;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            position: relative;
+            z-index: 1;
+        }
+        .nav-catalog-item .grid-icon { display: block; }
+        .nav-catalog-item .x-icon   { display: none;  }
+        .nav-catalog-item.open .grid-icon { display: none;  }
+        .nav-catalog-item.open .x-icon   { display: block; }
 
         @media (max-width: 1024px) {
-            .mp-mobile-nav {
-                display: flex; /* kichik ekranlarda ko'rinadi */
-            }
-            body {
-                padding-bottom: 80px; /* panel balandligi + biroz */
-            }
+            .mp-footer-desktop { display: none; }
+            .mp-footer-bottom  { display: none; }
+            .mp-mobile-nav     { display: flex; }
+            body { padding-bottom: calc(var(--nav-h) + 40px); }
         }
+
+        /* ===================== CATALOG PANEL ===================== */
+        .mp-catalog-panel {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #f5f5f5;
+            z-index: 999;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .mp-catalog-panel.open { display: flex; }
+        .mp-catalog-hd {
+            display: flex; align-items: center; gap: 10px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #ebebeb;
+            flex-shrink: 0; background: #fff;
+        }
+        .mp-catalog-back {
+            width: 36px; height: 36px; border-radius: 10px;
+            border: 1.5px solid #e0e0e0; background: none; cursor: pointer;
+            display: none; align-items: center; justify-content: center;
+        }
+        .mp-catalog-back svg { width: 18px; height: 18px; stroke: #333; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+        .mp-catalog-hd-title {
+            font-family: 'Exo 2', sans-serif; font-size: 17px; font-weight: 800;
+            color: #1a1a1a; flex: 1;
+        }
+        .mp-catalog-x {
+            width: 34px; height: 34px; border-radius: 10px;
+            background: #f5f5f5; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .mp-catalog-x svg { width: 16px; height: 16px; stroke: #555; fill: none; stroke-width: 2.2; stroke-linecap: round; }
+        .mp-screen { display: none; flex: 1; overflow-y: auto; }
+        .mp-screen.on { display: block; }
+        @keyframes sIn { from { opacity:0; transform:translateX(14px); } to { opacity:1; transform:translateX(0); } }
+        .mp-screen.anim { animation: sIn .18s ease; }
+        .mp-cat-row {
+            display: flex; align-items: center; gap: 13px;
+            padding: 13px 18px; background: #fff;
+            border-bottom: 1px solid #f2f2f2; cursor: pointer;
+        }
+        .mp-cat-row:active { background: #fff5f5; }
+        .mp-cat-row-ico { width: 40px; height: 40px; border-radius: 11px; background: #fff0f0; display: flex; align-items: center; justify-content: center; font-size: 21px; flex-shrink: 0; }
+        .mp-cat-row-name { flex: 1; font-size: 14px; font-weight: 500; color: #1a1a1a; }
+        .mp-cat-row-arr svg { width: 15px; height: 15px; stroke: #ccc; fill: none; stroke-width: 2; stroke-linecap: round; }
+        .mp-sub-section { background: #fff; margin-bottom: 8px; }
+        .mp-sub-section-title { padding: 13px 18px 8px; font-size: 13px; font-weight: 700; color: #1a1a1a; border-bottom: 1px solid #f5f5f5; }
+        .mp-sub-link { display: block; padding: 12px 18px; font-size: 14px; color: #333; text-decoration: none; border-bottom: 1px solid #f5f5f5; }
+        .mp-sub-link:last-child { border-bottom: none; }
+        .mp-sub-link:active { color: var(--red); }
+        .mp-loader { text-align: center; padding: 48px 20px; color: #bbb; font-size: 13px; }
+        .mp-spin { width: 28px; height: 28px; border: 3px solid #f0f0f0; border-top-color: var(--red); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 10px; }
+        @keyframes spin { to { transform:rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<!-- SAHIFA KONTENTI UCHUN BO'SH JOY -->
-<div style="height: 100px; background: #f5f5f5; text-align: center; line-height: 100px;">Footer ko'rinishi uchun pastga boring</div>
-
-<!-- FOOTER (DESKTOP) -->
-<footer class="mp-footer">
+<!-- ===== DESKTOP FOOTER ===== -->
+<footer>
     <div class="mp-footer-desktop">
-        <div class="mp-footer-main">
-            <div class="mp-footer-inner">
-                <div class="mp-footer-brand">
-                    <a href="/" class="mp-footer-logo"><span>MEDIA</span><span class="red">PARK</span></a>
-                    <p class="mp-footer-help">Возникли вопросы? Готовы помочь:</p>
-                    <a href="tel:+998712033333" class="mp-footer-phone">+998 71 203 33 33</a>
-                    <div class="mp-footer-schedule">
-                        <span>График работы:</span>
-                        Ежедневно : 09:00 – 21:00
-                    </div>
-                </div>
-                <div class="mp-footer-pay">
-                    <div class="mp-footer-col-title">Способы оплаты</div>
-                    <div class="mp-pay-grid">
-                        <div class="mp-pay-card"><div class="uzcard"><span class="u">U</span> uzcard</div></div>
-                        <div class="mp-pay-card"><div class="humo"><span class="h">H</span>UMO</div></div>
-                        <div class="mp-pay-card"><div class="click-logo"><div class="dot"></div><span>click</span></div></div>
-                        <div class="mp-pay-card"><div class="payme">payme</div></div>
-                        <div class="mp-pay-card"><div class="visa">VISA</div></div>
-                        <div class="mp-pay-card"><div class="mc"><div class="circle1"></div><div class="circle2"></div></div></div>
-                    </div>
-                </div>
-                <div class="mp-footer-nav">
-                    <div class="mp-footer-col-title">Информация</div>
-                    <a href="#">О нас</a><a href="#">Гарантия</a><a href="#">Акция</a><a href="#">Наши магазины</a>
-                </div>
-                <div class="mp-footer-nav">
-                    <div class="mp-footer-col-title">Услуги</div>
-                    <a href="#">Услуги</a><a href="#">Способы оплаты</a><a href="#">Всё о рассрочке</a><a href="#">Партнёрство</a><a href="#">Возврат товара</a>
-                </div>
-                <div class="mp-footer-nav">
-                    <div class="mp-footer-col-title">Для покупателей</div>
-                    <a href="#">Доставка</a><a href="#">Связаться с нами!</a><a href="#">Сервисный центр</a><a href="#">Оставить отзыв</a><a href="#">Вакансии</a>
+        <div class="mp-footer-inner">
+            <div>
+                <a href="/" class="mp-footer-logo">MEDIA<span class="red">PARK</span></a>
+                <p class="mp-footer-help">Возникли вопросы? Готовы помочь:</p>
+                <a href="tel:+998712033333" class="mp-footer-phone">+998 71 203 33 33</a>
+                <div class="mp-footer-schedule">График работы:<br>Ежедневно : 09:00 – 21:00</div>
+            </div>
+            <div>
+                <div class="mp-footer-col-title">Способы оплаты</div>
+                <div class="mp-pay-grid">
+                    <div class="mp-pay-card"><div class="pay-uzcard"><span class="u">U</span>uzcard</div></div>
+                    <div class="mp-pay-card"><div class="pay-humo"><span class="h">H</span>UMO</div></div>
+                    <div class="mp-pay-card"><div class="pay-click"><div class="dot"></div><span>click</span></div></div>
+                    <div class="mp-pay-card"><div class="pay-payme">payme</div></div>
+                    <div class="mp-pay-card"><div class="pay-visa">VISA</div></div>
+                    <div class="mp-pay-card"><div class="pay-mc"><div class="c1"></div><div class="c2"></div></div></div>
                 </div>
             </div>
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Информация</div>
+                <a href="#">О нас</a><a href="#">Гарантия</a><a href="#">Акция</a><a href="#">Наши магазины</a>
+            </div>
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Услуги</div>
+                <a href="#">Услуги</a><a href="#">Способы оплаты</a><a href="#">Всё о рассрочке</a><a href="#">Партнёрство</a><a href="#">Возврат товара</a>
+            </div>
+            <div class="mp-footer-nav">
+                <div class="mp-footer-col-title">Для покупателей</div>
+                <a href="#">Доставка</a><a href="#">Связаться с нами!</a><a href="#">Сервисный центр</a><a href="#">Оставить отзыв</a><a href="#">Вакансии</a>
+            </div>
         </div>
-        <div class="mp-footer-social">
-            <div class="mp-footer-social-inner">
-                <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8c-.12.57-.46.71-.93.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.53.26l.19-2.66 4.84-4.37c.21-.19-.05-.29-.33-.1L7.9 14.37l-2.54-.79c-.55-.17-.56-.55.12-.82l9.91-3.82c.46-.17.86.11.71.82l-.06-.96z"/></svg></a>
+    </div>
+    <div class="mp-footer-bottom">
+        <div class="mp-footer-bottom-inner">
+            <div class="mp-footer-copy">© 2025 MEDIAPARK. Все права защищены.</div>
+            <div class="mp-footer-social-row">
+                <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8l-1.7 8c-.12.57-.46.71-.93.44l-2.58-1.9-1.24 1.2c-.14.14-.26.26-.53.26l.19-2.66 4.84-4.37c.21-.19-.05-.29-.33-.1L7.9 14.37l-2.54-.79c-.55-.17-.56-.55.12-.82l9.91-3.82c.46-.17.86.11.71.82z"/></svg></a>
                 <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
-                <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+                <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
                 <a href="#" class="mp-social-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
             </div>
         </div>
     </div>
 
-    <!-- MOBIL NAVIGATSIYA PANELI (fixed) -->
+    <!-- ===== MOBILE FLOATING NAV ===== -->
     <nav class="mp-mobile-nav" id="mobileNav">
-        <a href="index.html" class="active" title="Asosiy sahifa">
+
+        <!-- 1. Главная -->
+        <a href="index.html" id="navHome" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-                <polyline points="9 22 9 12 15 12 15 22"/>
+                <path d="M4 12L12 4l8 8"/>
+                <path d="M6 10v9a1 1 0 0 0 1 1h4v-5h2v5h4a1 1 0 0 0 1-1v-9"/>
             </svg>
-            <span>Asosiy</span>
         </a>
-        <a href="products.html" title="Katalog">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <rect x="3" y="3" width="7" height="7"/>
-                <rect x="14" y="3" width="7" height="7"/>
-                <rect x="14" y="14" width="7" height="7"/>
-                <rect x="3" y="14" width="7" height="7"/>
-            </svg>
-            <span>Katalog</span>
-        </a>
-        <a href="favorites.html" title="Wishlist">
+
+        <!-- 2. Каталог -->
+        <div class="nav-catalog-item" id="navFab">
+            <button class="cat-pill" onclick="toggleCatalog()">
+                <svg class="grid-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <svg class="x-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- 3. Избранное -->
+        <a href="favorites.html" id="navFav" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
             </svg>
-            <span>Sevimli</span>
         </a>
-        <a href="cart.html" title="Korzina">
+
+        <!-- 4. Корзина -->
+        <a href="cart.html" id="navCart" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/>
-                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                <line x1="3" y1="6" x2="21" y2="6"/>
+                <path d="M16 10a4 4 0 0 1-8 0"/>
             </svg>
-            <span>Korzina</span>
         </a>
-        <a href="profile.html" title="Profil">
+
+        <!-- 5. Профиль -->
+        <a href="profile.html" id="navProfile" class="nav-item">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
                 <circle cx="12" cy="7" r="4"/>
             </svg>
-            <span>Profil</span>
         </a>
     </nav>
 </footer>
 
-<script>
-    // Faol bo'limni belgilash (oddiy misol)
-    (function() {
-        const currentPath = window.location.pathname;
-        const navLinks = document.querySelectorAll('.mp-mobile-nav a');
-        navLinks.forEach(link => {
-            link.classList.remove('active');
-            if (currentPath.endsWith(link.getAttribute('href'))) {
-                link.classList.add('active');
-            }
-        });
-        // hech biri mos kelmasa asosiy faol
-        if (!document.querySelector('.mp-mobile-nav a.active')) {
-            navLinks[0].classList.add('active');
-        }
-    })();
-</script>
+<!-- ===== CATALOG PANEL ===== -->
+<div class="mp-catalog-panel" id="catalogPanel">
+    <div class="mp-catalog-hd">
+        <button class="mp-catalog-back" id="catalogBack" onclick="catalogGoBack()">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
+        <div class="mp-catalog-hd-title" id="catalogTitle">Каталог</div>
+        <button class="mp-catalog-x" onclick="closeCatalog()">
+            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+    </div>
+    <div class="mp-screen on" id="sc1">
+        <div class="mp-loader" id="sc1Loader"><div class="mp-spin"></div>Загрузка...</div>
+        <div id="sc1List"></div>
+    </div>
+    <div class="mp-screen" id="sc2">
+        <div id="sc2Content"></div>
+    </div>
+</div>
 
+<script>
+(function () {
+    const API = (location.hostname === 'localhost' || location.hostname === '127.0.0.1')
+        ? 'http://localhost:8000' : 'https://mediapark.zapto.org';
+
+    /* ---- Active nav highlight ---- */
+    function clearAllActive() {
+        document.querySelectorAll('.mp-mobile-nav .nav-item').forEach(a => a.classList.remove('active'));
+        document.getElementById('navFab').classList.remove('open');
+    }
+
+    function setActiveNav(el) {
+        clearAllActive();
+        if (el) el.classList.add('active');
+    }
+
+    // Oddiy tugmalar — bosilganda active
+    document.querySelectorAll('.mp-mobile-nav .nav-item').forEach(function(a) {
+        a.addEventListener('click', function() { setActiveNav(a); });
+    });
+
+    /* ---- State ---- */
+    let catalogData = [];
+    let loaded      = false;
+    let catalogOpen = false;
+
+    const panel    = document.getElementById('catalogPanel');
+    const backBtn  = document.getElementById('catalogBack');
+    const titleEl  = document.getElementById('catalogTitle');
+    const sc1      = document.getElementById('sc1');
+    const sc2      = document.getElementById('sc2');
+    const navFab   = document.getElementById('navFab');
+
+    function setCatalogUI(open) {
+        navFab.classList.toggle('open', open);
+    }
+
+    function showSc(el) {
+        [sc1, sc2].forEach(s => s.classList.remove('on', 'anim'));
+        el.classList.add('on');
+        requestAnimationFrame(() => el.classList.add('anim'));
+    }
+
+    window.toggleCatalog = function () {
+        catalogOpen ? closeCatalog() : openCatalog();
+    };
+
+    function openCatalog() {
+        panel.classList.add('open');
+        catalogOpen = true;
+        // Boshqa nav itemlarni o'chirish, katalogni active qilish
+        document.querySelectorAll('.mp-mobile-nav .nav-item').forEach(a => a.classList.remove('active'));
+        navFab.classList.add('open');
+        backBtn.style.display = 'none';
+        titleEl.textContent = 'Каталог';
+        showSc(sc1);
+        if (!loaded) fetchCatalog();
+    }
+
+    window.closeCatalog = function () {
+        panel.classList.remove('open');
+        catalogOpen = false;
+        navFab.classList.remove('open');
+    };
+
+    window.catalogGoBack = function () {
+        backBtn.style.display = 'none';
+        titleEl.textContent = 'Каталог';
+        showSc(sc1);
+    };
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeCatalog(); });
+
+    /* ---- Fetch ---- */
+    async function fetchCatalog() {
+        const loader = document.getElementById('sc1Loader');
+        loader.style.display = 'block';
+        try {
+            const res  = await fetch(`${API}/api/v1/catalogues/`);
+            const data = await res.json();
+            catalogData = Array.isArray(data) ? data : (data.results || []);
+            renderSc1();
+            loaded = true;
+        } catch (err) {
+            loader.innerHTML = '<div style="color:#e00;font-size:13px;">Yuklashda xatolik</div>';
+            console.error(err);
+        } finally {
+            loader.style.display = 'none';
+        }
+    }
+
+    const EMAP = [
+        ['телевиз','📺'],['аудио','🔊'],['смартфон','📱'],['телефон','📱'],
+        ['планшет','📱'],['ноутбук','💻'],['моноблок','🖥️'],['игров','🎮'],
+        ['дом','🏠'],['кухн','🍳'],['спорт','🏋️'],['хобби','🎨'],
+        ['дет','🧸'],['авто','🚗'],['строи','🏗️'],['apple','🍎']
+    ];
+    function ge(name) {
+        const n = (name || '').toLowerCase();
+        for (const [k, v] of EMAP) if (n.includes(k)) return v;
+        return '📦';
+    }
+
+    function renderSc1() {
+        document.getElementById('sc1Loader').style.display = 'none';
+        const list = document.getElementById('sc1List');
+        list.innerHTML = '';
+        if (!catalogData.length) {
+            list.innerHTML = '<div style="padding:20px;color:#999;text-align:center;">Katalog topilmadi</div>';
+            return;
+        }
+        catalogData.forEach((cat, idx) => {
+            const d = document.createElement('div');
+            d.className = 'mp-cat-row';
+            d.innerHTML = `
+                <div class="mp-cat-row-ico">${cat.emoji || ge(cat.name)}</div>
+                <div class="mp-cat-row-name">${cat.name}</div>
+                <div class="mp-cat-row-arr"><svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg></div>
+            `;
+            d.onclick = () => openSc2(idx);
+            list.appendChild(d);
+        });
+    }
+
+    function openSc2(idx) {
+        const cat = catalogData[idx];
+        if (!cat) return;
+        backBtn.style.display = 'flex';
+        titleEl.textContent = cat.name;
+
+        const content = document.getElementById('sc2Content');
+        const cats    = cat.categories || [];
+
+        if (!cats.length) {
+            content.innerHTML = '<div class="mp-loader">Bo\'sh</div>';
+            showSc(sc2);
+            return;
+        }
+
+        content.innerHTML = cats.map(c => {
+            const subs = c.sub_categories || [];
+            let links  = '';
+
+            if (subs.length) {
+                links = subs.map(s => {
+                    const subName = encodeURIComponent(s.name || '');
+                    return `<a class="mp-sub-link"
+                        href="products.html?subcategory=${subName}"
+                        onclick="closeCatalog()">${s.name}</a>`;
+                }).join('');
+            } else {
+                const catName = encodeURIComponent(c.name || '');
+                links = `<a class="mp-sub-link"
+                    href="products.html?category=${catName}"
+                    onclick="closeCatalog()">Все товары</a>`;
+            }
+
+            return `
+                <div class="mp-sub-section">
+                    <div class="mp-sub-section-title">${c.name}</div>
+                    ${links}
+                </div>`;
+        }).join('');
+
+        showSc(sc2);
+    }
+})();
+</script>
 </body>
 </html>
